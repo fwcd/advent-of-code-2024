@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "lang": {
+      "codemirror": "powershell",
+      "name": "PowerShell"
+    },
+    "path": "day01/src/day01.ps1"
+  }
+]
