@@ -1,3 +1,3 @@
 #!/usr/bin/env pwsh
 
-Write-Output "Hello, world!"
+Write-Output "File: $($args[0])"
