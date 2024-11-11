@@ -39,10 +39,10 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 
 The programs are packaged with [Nix](https://nixos.org/), a functional package manager for Linux and macOS that focuses on reproducible builds. This makes it easy to build the programs, both locally and CI, without relying on system packages.
 
-To build one of the days, `cd` into the corresponding directory and build and/or run the Nix flake. For example, to run day 4, use the following commands:
+To build one of the days, `cd` into the corresponding directory and build and/or run the Nix flake. For example, to run day 1, use the following commands:
 
 ```sh
-cd day04
+cd day01
 nix run . resources/input.txt
 ```
 

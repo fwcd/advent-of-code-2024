@@ -6,6 +6,7 @@
 
 My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), written in 25 different programming languages.
 
+- [ ] [**Day 01**](day01): [PowerShell](day01/src/day01.ps1)
 
 ## Development
 
@@ -22,6 +23,15 @@ Every day is packaged up to take exactly one command-line argument, the input fi
 
 > [!TIP]
 > The build environment can be added to the current `PATH` using `nix develop`. This is useful to manually run the compiler.
+
+## Lessons Learned
+
+- Visualize the input with GraphViz (day [8](day08), [20](day20), [23](day23), [25](day25))
+- Some puzzles are actually reverse-engineering exercises and rely on undocumented input constraints to be solved efficiently or even feasibly at all (day [8](day08), [20](day20), [23](day23))
+- Take the [LCM](https://en.wikipedia.org/wiki/Least_common_multiple) to solve cycle alignment problems (day [8](day08), [20](day20))
+  - If there are offsets, use the [CRT](https://en.wikipedia.org/wiki/Chinese_remainder_theorem) ([like in previous years](https://github.com/fwcd/advent-of-code-2020/blob/18c3ba9820cb52627366a632ccaab233a6d9f563/day13/src/day13.c#L39-L59))
+- Binary counters can elegantly be modeled as chains of flip flop (day [20](day20))
+- Cross products can be surprisingly useful to turn the most nonlinear-looking problems into linear equations (day [24](day24))
 
 ## Previous Years
 
