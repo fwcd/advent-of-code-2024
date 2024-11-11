@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+cd "$(dirname $0)/.."
+
+scripts/gyb -o README.md --line-directive "" README.md.gyb

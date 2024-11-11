@@ -1,0 +1,72 @@
+%{
+  import json
+
+  with open('paths.json', 'r') as f:
+    days = json.load(f)
+  
+  def format_solution(solution):
+    lang = solution['lang']
+    path = solution['path']
+    s = f"[{lang['name']}]({path})"
+
+    additional_paths = solution.get('additionalPaths', '')
+    if additional_paths:
+      s += f" ({', '.join(f'[{name}]({path})' for name, path in additional_paths.items())})"
+
+    additional_notes = solution.get('additionalNotes', '')
+    if additional_notes:
+      s += f' {additional_notes}'
+    return s
+  
+  def day_links(ds):
+    return f"day {', '.join(f'[{d}](day{d:02})' for d in ds)}"
+}%
+<!-- Automatically generated from README.md.gyb, do not edit directly! -->
+
+# Advent of Code 2024
+
+[![Run](https://github.com/fwcd/advent-of-code-2024/actions/workflows/run.yml/badge.svg)](https://github.com/fwcd/advent-of-code-2024/actions/workflows/run.yml)
+
+My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), written in 25 different programming languages.
+
+% for i, day in enumerate(days):
+%   if day:
+- [${'x' if day.get('completed', False) else ' '}] [**Day ${f'{i + 1:02}'}**](day${f'{i + 1:02}'}): ${', '.join(format_solution(part) for part in day.get('parts', [day]))}
+%   end
+% end
+
+## Development
+
+The programs are packaged with [Nix](https://nixos.org/), a functional package manager for Linux and macOS that focuses on reproducible builds. This makes it easy to build the programs, both locally and CI, without relying on system packages.
+
+To build one of the days, `cd` into the corresponding directory and build and/or run the Nix flake. For example, to run day 4, use the following commands:
+
+```sh
+cd day04
+nix run . resources/input.txt
+```
+
+Every day is packaged up to take exactly one command-line argument, the input file, and usually includes the demo input from the exercise too.
+
+> [!TIP]
+> The build environment can be added to the current `PATH` using `nix develop`. This is useful to manually run the compiler.
+
+## Lessons Learned
+
+- Visualize the input with GraphViz (${day_links([8, 20, 23, 25])})
+- Some puzzles are actually reverse-engineering exercises and rely on undocumented input constraints to be solved efficiently or even feasibly at all (${day_links([8, 20, 23])})
+- Take the [LCM](https://en.wikipedia.org/wiki/Least_common_multiple) to solve cycle alignment problems (${day_links([8, 20])})
+  - If there are offsets, use the [CRT](https://en.wikipedia.org/wiki/Chinese_remainder_theorem) ([like in previous years](https://github.com/fwcd/advent-of-code-2020/blob/18c3ba9820cb52627366a632ccaab233a6d9f563/day13/src/day13.c#L39-L59))
+- Binary counters can elegantly be modeled as chains of flip flop (${day_links([20])})
+- Cross products can be surprisingly useful to turn the most nonlinear-looking problems into linear equations (${day_links([24])})
+
+## Previous Years
+
+My solutions to the previous challenges can be found here:
+
+- [Advent of Code 2023](https://github.com/fwcd/advent-of-code-2023)
+- [Advent of Code 2022](https://github.com/fwcd/advent-of-code-2022)
+- [Advent of Code 2021](https://github.com/fwcd/advent-of-code-2021)
+- [Advent of Code 2020](https://github.com/fwcd/advent-of-code-2020)
+- [Advent of Code 2019](https://github.com/fwcd/advent-of-code-2019)
+- [Advent of Code 2015](https://github.com/fwcd/advent-of-code-2015)
