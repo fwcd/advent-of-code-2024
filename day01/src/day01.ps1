@@ -1,3 +1,4 @@
 #!/usr/bin/env pwsh
 
-Write-Output "File: $($args[0])"
+$input = Get-Content $args[0]
+Write-Output "Input: $input"
