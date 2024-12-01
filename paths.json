@@ -4,6 +4,7 @@
       "codemirror": "powershell",
       "name": "PowerShell"
     },
-    "path": "day01/src/day01.ps1"
+    "path": "day01/src/day01.ps1",
+    "completed": true
   }
 ]
