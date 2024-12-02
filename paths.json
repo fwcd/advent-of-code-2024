@@ -6,5 +6,12 @@
     },
     "path": "day01/src/day01.ps1",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "nix",
+      "name": "Nix"
+    },
+    "path": "day02/src/day02.nix"
   }
 ]

@@ -7,6 +7,7 @@
 My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), written in 25 different programming languages.
 
 - [x] [**Day 01**](day01): [PowerShell](day01/src/day01.ps1)
+- [ ] [**Day 02**](day02): [Nix](day02/src/day02.nix)
 
 ## Development
 
