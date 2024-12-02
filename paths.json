@@ -12,6 +12,7 @@
       "codemirror": "nix",
       "name": "Nix"
     },
-    "path": "day02/src/day02.nix"
+    "path": "day02/src/day02.nix",
+    "completed": true
   }
 ]
