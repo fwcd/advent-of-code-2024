@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-latest', 'macos-latest']
-        day: ['01']
+        day: ['01', '02']
 
     steps:
     - uses: actions/checkout@v4
