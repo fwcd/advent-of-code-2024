@@ -20,6 +20,7 @@
       "codemirror": "perl",
       "name": "Perl"
     },
-    "path": "day03/src/day03.pl"
+    "path": "day03/src/day03.pl",
+    "completed": true
   }
 ]
