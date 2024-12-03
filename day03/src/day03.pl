@@ -10,11 +10,12 @@ if (not defined $inputFile) {
 
 open(FH, '<', "$inputFile") or die $!;
 
+my $part1 = 0;
+
 while (<FH>) {
   while ($_ =~ /mul\((\d+),(\d+)\)/g) {
-    print "mul($1, $2)\n";
+    $part1 += $1 * $2;
   }
-  print "\n";
 }
 
-print "Hello World\n";
+print "Part 1: $part1\n";
