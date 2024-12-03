@@ -8,6 +8,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 
 - [x] [**Day 01**](day01): [PowerShell](day01/src/day01.ps1)
 - [x] [**Day 02**](day02): [Nix](day02/src/day02.nix)
+- [ ] [**Day 03**](day03): [Perl](day03/src/day03.pl)
 
 ## Development
 

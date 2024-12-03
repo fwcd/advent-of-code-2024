@@ -14,5 +14,12 @@
     },
     "path": "day02/src/day02.nix",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "perl",
+      "name": "Perl"
+    },
+    "path": "day03/src/day03.pl"
   }
 ]
