@@ -23,9 +23,6 @@ bool has_xmas_at(struct Grid grid, int i, int j, int di, int dj) {
     int ni = i + k * di;
     int nj = j + k * dj;
     if (!in_bounds(grid, ni, nj) || grid.data[ni][nj] != XMAS[k]) {
-      if (k > 0 && in_bounds(grid, ni, nj)) {
-        printf("Failed at %d, %d -> %d, %d (%c != %c)\n", i, j, ni, nj, grid.data[ni][nj], XMAS[k]);
-      }
       return false;
     }
   }
