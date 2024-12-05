@@ -1,12 +1,26 @@
-:- use_module(library(dcg/basics)), use_module(library(lists)).
+:- use_module(library(dcg/basics)).
+:- use_module(library(lists)).
 
 index_of(X, [X|_], 0).
 index_of(X, [_|Vs], I) :-
   index_of(X, Vs, IMinus1),
   I is IMinus1 + 1.
 
+middle(Xs, X) :-
+  length(Xs, L),
+  I is div(L, 2),
+  nth0(I, Xs, X).
+
 rule_applies(rule(X, Y), Update) :-
   index_of(X, Update, I), index_of(Y, Update, J) -> !, I < J; true.
+
+rules_apply([], _).
+rules_apply([Rule|Rules], Update) :-
+  rule_applies(Rule, Update), rules_apply(Rules, Update).
+
+solve_part1(input(Rules, Updates), Part1) :-
+  findall(X, (member(Update, Updates), rules_apply(Rules, Update), middle(Update, X)), Xs),
+  sumlist(Xs, Part1).
 
 % +---------------------------+
 % | DCG for parsing the input |
@@ -40,5 +54,6 @@ main :-
     Args = [InputPath|_] ->
       read_input(InputPath, Input),
 
-      write('Input: '), write(Input), nl
+      solve_part1(Input, Part1),
+      write('Part 1: '), write(Part1), nl
   ).
