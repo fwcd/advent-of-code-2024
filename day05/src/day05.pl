@@ -4,7 +4,7 @@
 % | DCG for parsing the input |
 % +---------------------------+
 
-dcg_input(input(Rules, Updates)) --> dcg_rules(Rules), eol, dcg_updates(Updates), eos, !.
+dcg_input(input(Rules, Updates)) --> dcg_rules(Rules), dcg_updates(Updates).
 
 dcg_rules([])           --> eol.
 dcg_rules([Rule|Rules]) --> dcg_rule(Rule), dcg_rules(Rules).
@@ -14,8 +14,9 @@ dcg_rule(rule(X, Y)) --> number(X), "|", number(Y), eol.
 dcg_updates([])               --> eol.
 dcg_updates([Update|Updates]) --> dcg_update(Update), dcg_updates(Updates).
 
-dcg_update([])     --> eol.
-dcg_update([X|Xs]) --> number(X), ",", dcg_update(Xs).
+dcg_update([])         --> eol.
+dcg_update([X])        --> number(X), eol.
+dcg_update([X1,X2|Xs]) --> number(X1), ",", dcg_update([X2|Xs]).
 
 % +--------------+
 % | Main program |
