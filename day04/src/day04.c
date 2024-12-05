@@ -3,10 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char XMAS[] = "XMAS";
-
 #define GRID_SIZE 140
-#define XMAS_LENGTH (sizeof(XMAS) / sizeof(char) - 1)
+#define LENGTH(S) (sizeof(S) / sizeof(char) - 1)
 
 struct Grid {
   char data[GRID_SIZE][GRID_SIZE];
@@ -14,26 +12,48 @@ struct Grid {
   int height;
 };
 
+struct Solution {
+  int part1;
+  int part2;
+};
+
 bool in_bounds(struct Grid grid, int i, int j) {
   return i >= 0 && i < grid.height && j >= 0 && j < grid.width;
 }
 
-bool has_xmas_at(struct Grid grid, int i, int j, int di, int dj) {
-  for (int k = 0; k < XMAS_LENGTH; k++) {
+bool matches_at(struct Grid grid, int i, int j, int di, int dj, const char pattern[], int length) {
+  for (int k = 0; k < length; k++) {
     int ni = i + k * di;
     int nj = j + k * dj;
-    if (!in_bounds(grid, ni, nj) || grid.data[ni][nj] != XMAS[k]) {
+    if (!in_bounds(grid, ni, nj) || grid.data[ni][nj] != pattern[k]) {
       return false;
     }
   }
   return true;
 }
 
-int count_xmas_at(struct Grid grid, int i, int j) {
-  return has_xmas_at(grid, i, j,  1, 0) + has_xmas_at(grid, i, j,  0,  1)
-       + has_xmas_at(grid, i, j, -1, 0) + has_xmas_at(grid, i, j,  0, -1)
-       + has_xmas_at(grid, i, j,  1, 1) + has_xmas_at(grid, i, j, -1, -1)
-       + has_xmas_at(grid, i, j, -1, 1) + has_xmas_at(grid, i, j,  1, -1);
+bool matches_xmas_at(struct Grid grid, int i, int j, int di, int dj) {
+  const char XMAS[] = "XMAS";
+  return matches_at(grid, i, j, di, dj, XMAS, LENGTH(XMAS));
+}
+
+int count_xmas1_at(struct Grid grid, int i, int j) {
+  return matches_xmas_at(grid, i, j,  1, 0) + matches_xmas_at(grid, i, j,  0,  1)
+       + matches_xmas_at(grid, i, j, -1, 0) + matches_xmas_at(grid, i, j,  0, -1)
+       + matches_xmas_at(grid, i, j,  1, 1) + matches_xmas_at(grid, i, j, -1, -1)
+       + matches_xmas_at(grid, i, j, -1, 1) + matches_xmas_at(grid, i, j,  1, -1);
+}
+
+bool matches_mas_at(struct Grid grid, int i, int j, int di, int dj) {
+  const char MAS[] = "MAS";
+  return matches_at(grid, i, j, di, dj, MAS, LENGTH(MAS));
+}
+
+bool has_xmas2_at(struct Grid grid, int i, int j) {
+  return (matches_mas_at(grid, i - 1, j - 1,  1,  1) && matches_mas_at(grid, i + 1, j - 1, -1,  1))
+      || (matches_mas_at(grid, i + 1, j - 1, -1,  1) && matches_mas_at(grid, i + 1, j + 1, -1, -1))
+      || (matches_mas_at(grid, i - 1, j - 1,  1,  1) && matches_mas_at(grid, i - 1, j + 1,  1, -1))
+      || (matches_mas_at(grid, i - 1, j + 1,  1, -1) && matches_mas_at(grid, i + 1, j + 1, -1, -1));
 }
 
 struct Grid parse_grid(FILE *input) {
@@ -54,14 +74,15 @@ struct Grid parse_grid(FILE *input) {
   return grid;
 }
 
-int count_xmas(struct Grid grid) {
-  int count = 0;
+struct Solution solve(struct Grid grid) {
+  struct Solution solution = { .part1 = 0, .part2 = 0 };
   for (int i = 0; i < grid.height; i++) {
     for (int j = 0; j < grid.width; j++) {
-      count += count_xmas_at(grid, i, j);
+      solution.part1 += count_xmas1_at(grid, i, j);
+      solution.part2 += has_xmas2_at(grid, i, j);
     }
   }
-  return count;
+  return solution;
 }
 
 int main(int argc, const char *argv[]) {
@@ -81,8 +102,9 @@ int main(int argc, const char *argv[]) {
   printf("Grid is of width %d and height %d\n", grid.width, grid.height);
   fclose(input);
 
-  int part1 = count_xmas(grid);
-  printf("Part 1: %d\n", part1);
+  struct Solution solution = solve(grid);
+  printf("Part 1: %d\n", solution.part1);
+  printf("Part 2: %d\n", solution.part2);
 
   return 0;
 }
