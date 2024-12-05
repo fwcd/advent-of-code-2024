@@ -22,5 +22,12 @@
     },
     "path": "day03/src/day03.pl",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "clike",
+      "name": "C"
+    },
+    "path": "day04/src/day04.c"
   }
 ]
