@@ -1,4 +1,7 @@
 {
+  "files.associations": {
+    "day05.pl": "prolog"
+  },
   "files.readonlyInclude": {
     "README.md": true
   }
