@@ -18,7 +18,7 @@ bool in_bounds(struct Grid grid, int i, int j) {
   return i >= 0 && i < grid.height && j >= 0 && j < grid.width;
 }
 
-bool has_xmas(struct Grid grid, int i, int j, int di, int dj) {
+bool has_xmas_at(struct Grid grid, int i, int j, int di, int dj) {
   for (int k = 0; k < XMAS_LENGTH; k++) {
     int ni = i + k * di;
     int nj = j + k * dj;
@@ -32,11 +32,11 @@ bool has_xmas(struct Grid grid, int i, int j, int di, int dj) {
   return true;
 }
 
-bool has_any_xmas(struct Grid grid, int i, int j) {
-  return has_xmas(grid, i, j,  1, 0) || has_xmas(grid, i, j,  0,  1)
-      || has_xmas(grid, i, j, -1, 0) || has_xmas(grid, i, j,  0, -1)
-      || has_xmas(grid, i, j,  1, 1) || has_xmas(grid, i, j, -1, -1)
-      || has_xmas(grid, i, j, -1, 1) || has_xmas(grid, i, j,  1, -1);
+int count_xmas_at(struct Grid grid, int i, int j) {
+  return has_xmas_at(grid, i, j,  1, 0) + has_xmas_at(grid, i, j,  0,  1)
+       + has_xmas_at(grid, i, j, -1, 0) + has_xmas_at(grid, i, j,  0, -1)
+       + has_xmas_at(grid, i, j,  1, 1) + has_xmas_at(grid, i, j, -1, -1)
+       + has_xmas_at(grid, i, j, -1, 1) + has_xmas_at(grid, i, j,  1, -1);
 }
 
 struct Grid parse_grid(FILE *input) {
@@ -61,9 +61,7 @@ int count_xmas(struct Grid grid) {
   int count = 0;
   for (int i = 0; i < grid.height; i++) {
     for (int j = 0; j < grid.width; j++) {
-      if (has_any_xmas(grid, i, j)) {
-        count++;
-      }
+      count += count_xmas_at(grid, i, j);
     }
   }
   return count;
