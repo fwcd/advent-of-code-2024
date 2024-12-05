@@ -1,4 +1,12 @@
-:- use_module(library(dcg/basics)).
+:- use_module(library(dcg/basics)), use_module(library(lists)).
+
+index_of(X, [X|_], 0).
+index_of(X, [_|Vs], I) :-
+  index_of(X, Vs, IMinus1),
+  I is IMinus1 + 1.
+
+rule_applies(rule(X, Y), Update) :-
+  index_of(X, Update, I), index_of(Y, Update, J) -> !, I < J; true.
 
 % +---------------------------+
 % | DCG for parsing the input |
