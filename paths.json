@@ -28,6 +28,7 @@
       "codemirror": "clike",
       "name": "C"
     },
-    "path": "day04/src/day04.c"
+    "path": "day04/src/day04.c",
+    "completed": true
   }
 ]
