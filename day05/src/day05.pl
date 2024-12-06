@@ -1,6 +1,10 @@
 :- use_module(library(dcg/basics)).
 :- use_module(library(lists)).
 
+% +-------------------+
+% | General utilities |
+% +-------------------+
+
 index_of(X, [X|_], 0).
 index_of(X, [_|Vs], I) :-
   index_of(X, Vs, IMinus1),
@@ -32,29 +36,40 @@ middle(Xs, X) :-
   I is div(L, 2),
   nth0(I, Xs, X).
 
+% +-------------------------+
+% | Solution to the problem |
+% +-------------------------+
+
+% Holds if the given rule applies to the given update (a list of numbers).
 rule_applies(rule(X, Y), Update) :-
   index_of(X, Update, I), index_of(Y, Update, J) -> !, I < J; true.
 
+% Holds if all rules applies to the given update.
 rules_apply([], _).
 rules_apply([Rule|Rules], Update) :-
   rule_applies(Rule, Update), rules_apply(Rules, Update).
 
+% Applies a single rule to the given update.
 apply_rule(rule(X, Y), Update, Result) :-
   index_of(X, Update, I), index_of(Y, Update, J), I > J -> swap(I, J, Update, Result); Result = Update.
 
+% Applies all rules sequentially to the update (once).
 apply_rules([], Update, Update).
 apply_rules([Rule|Rules], Update, Result) :-
   apply_rule(Rule, Update, Update2),
   apply_rules(Rules, Update2, Result).
 
+% Iteratively applies all rules until the result no longer changes (i.e. performs a fixpoint computation).
 fix_rules(Rules, Update, Result) :-
   apply_rules(Rules, Update, Update2),
   (Update = Update2 -> Result = Update; fix_rules(Rules, Update2, Result)).
 
+% Computes the part 1 solution.
 solve_part1(input(Rules, Updates), Part1) :-
   findall(X, (member(Update, Updates), rules_apply(Rules, Update), middle(Update, X)), Xs),
   sumlist(Xs, Part1).
 
+% Computes the part 2 solution.
 solve_part2(input(Rules, Updates), Part2) :-
   findall(X, (member(Update, Updates), \+ rules_apply(Rules, Update), fix_rules(Rules, Update, Result), middle(Result, X)), Xs),
   sumlist(Xs, Part2).
