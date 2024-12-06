@@ -7,7 +7,7 @@ const Map = std.AutoHashMap;
 const String = []u8;
 const Matrix = List(String);
 const Vec2 = struct { x: i32, y: i32 };
-const Guard = struct { pos: Vec2, dir: Vec2 };
+const State = struct { pos: Vec2, dir: Vec2 };
 const Walk = struct { visited: Set(Vec2), loops: bool };
 
 fn Set(comptime T: type) type {
@@ -30,7 +30,7 @@ fn turnRight(dir: Vec2) Vec2 {
     return .{ .x = -dir.y, .y = dir.x };
 }
 
-fn step(guard: Guard) Guard {
+fn step(guard: State) State {
     return .{ .pos = vecAdd(guard.pos, guard.dir), .dir = guard.dir };
 }
 
@@ -52,7 +52,7 @@ fn parseDirection(c: u8) ?Vec2 {
     };
 }
 
-fn findStart(matrix: Matrix) Guard {
+fn findStart(matrix: Matrix) State {
     for (0..height(matrix)) |y| {
         for (0..width(matrix)) |x| {
             const dir = parseDirection(matrix.items[y][x]);
@@ -64,21 +64,18 @@ fn findStart(matrix: Matrix) Guard {
     std.debug.panic("Could not find start", .{});
 }
 
-fn walkFrom(start: Guard, matrix: Matrix, extraObstacle: ?Vec2) !Walk {
-    var visited = Set(Vec2).init(allocator);
-    var visitedGuards = Set(Guard).init(allocator);
+fn walkFrom(start: State, matrix: Matrix, extraObstacle: ?Vec2) !Walk {
+    var visitedPositions = Set(Vec2).init(allocator);
+    var visitedStates = Set(State).init(allocator);
+    defer visitedStates.deinit();
     var guard = start;
 
-    defer {
-        visitedGuards.deinit();
-    }
-
     while (inBounds(guard.pos, matrix)) {
-        if (visitedGuards.contains(guard)) {
-            return .{ .visited = visited, .loops = true };
+        if (visitedStates.contains(guard)) {
+            return .{ .visited = visitedPositions, .loops = true };
         }
-        try visited.put(guard.pos, {});
-        try visitedGuards.put(guard, {});
+        try visitedPositions.put(guard.pos, {});
+        try visitedStates.put(guard, {});
         const next = step(guard);
         if (inBounds(next.pos, matrix) and ((extraObstacle != null and std.meta.eql(next.pos, extraObstacle.?)) or get(next.pos, matrix) == '#')) {
             guard.dir = turnRight(guard.dir);
@@ -87,7 +84,7 @@ fn walkFrom(start: Guard, matrix: Matrix, extraObstacle: ?Vec2) !Walk {
         }
     }
 
-    return .{ .visited = visited, .loops = false };
+    return .{ .visited = visitedPositions, .loops = false };
 }
 
 pub fn main() !u8 {
