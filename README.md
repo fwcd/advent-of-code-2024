@@ -10,7 +10,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 02**](day02): [Nix](day02/src/day02.nix)
 - [x] [**Day 03**](day03): [Perl](day03/src/day03.pl)
 - [x] [**Day 04**](day04): [C](day04/src/day04.c)
-- [ ] [**Day 05**](day05): [Prolog](day05/src/day05.pl)
+- [x] [**Day 05**](day05): [Prolog](day05/src/day05.pl)
 
 ## Development
 
