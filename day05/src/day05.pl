@@ -39,9 +39,25 @@ rules_apply([], _).
 rules_apply([Rule|Rules], Update) :-
   rule_applies(Rule, Update), rules_apply(Rules, Update).
 
+apply_rule(rule(X, Y), Update, Result) :-
+  index_of(X, Update, I), index_of(Y, Update, J), I > J -> swap(I, J, Update, Result); Result = Update.
+
+apply_rules([], Update, Update).
+apply_rules([Rule|Rules], Update, Result) :-
+  apply_rule(Rule, Update, Update2),
+  apply_rules(Rules, Update2, Result).
+
+fix_rules(Rules, Update, Result) :-
+  apply_rules(Rules, Update, Update2),
+  (Update = Update2 -> Result = Update; fix_rules(Rules, Update2, Result)).
+
 solve_part1(input(Rules, Updates), Part1) :-
   findall(X, (member(Update, Updates), rules_apply(Rules, Update), middle(Update, X)), Xs),
   sumlist(Xs, Part1).
+
+solve_part2(input(Rules, Updates), Part2) :-
+  findall(X, (member(Update, Updates), \+ rules_apply(Rules, Update), fix_rules(Rules, Update, Result), middle(Result, X)), Xs),
+  sumlist(Xs, Part2).
 
 % +---------------------------+
 % | DCG for parsing the input |
@@ -76,5 +92,8 @@ main :-
       read_input(InputPath, Input),
 
       solve_part1(Input, Part1),
-      write('Part 1: '), write(Part1), nl
+      write('Part 1: '), write(Part1), nl,
+
+      solve_part2(Input, Part2),
+      write('Part 2: '), write(Part2), nl
   ).
