@@ -13,11 +13,11 @@ fn Set(comptime T: type) type {
     return Map(T, void);
 }
 
-fn width(matrix: Matrix) i32 {
+fn width(matrix: Matrix) usize {
     return matrix.items[0].len;
 }
 
-fn height(matrix: Matrix) i32 {
+fn height(matrix: Matrix) usize {
     return matrix.items.len;
 }
 
@@ -32,15 +32,15 @@ fn parseDirection(c: u8) ?Vec2 {
 }
 
 fn findStart(matrix: Matrix) State {
-    for (0..height(matrix)) |i| {
-        for (0..width(matrix)) |j| {
-            const dir = parseDirection(matrix[i][j]);
+    for (0..height(matrix)) |y| {
+        for (0..width(matrix)) |x| {
+            const dir = parseDirection(matrix.items[y][x]);
             if (dir != null) {
-                return dir;
+                return .{ .pos = .{ .x = @intCast(x), .y = @intCast(y) }, .dir = dir.? };
             }
         }
     }
-    std.debug.panic("Could not find start");
+    std.debug.panic("Could not find start", .{});
 }
 
 pub fn main() !u8 {
@@ -72,6 +72,9 @@ pub fn main() !u8 {
     for (matrix.items) |line| {
         std.log.debug("{s}", .{line});
     }
+
+    const state = findStart(matrix);
+    std.log.debug("{}", .{state});
 
     return 0;
 }
