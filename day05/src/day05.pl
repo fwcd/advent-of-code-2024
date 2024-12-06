@@ -6,6 +6,27 @@ index_of(X, [_|Vs], I) :-
   index_of(X, Vs, IMinus1),
   I is IMinus1 + 1.
 
+set_at(0, V, [_|Xs], [V|Xs]).
+set_at(I, V, [X|Xs], [X|Ys]) :-
+  I > 0,
+  IMinus1 is I - 1,
+  set_at(IMinus1, V, Xs, Ys).
+
+swap(0, 0, Xs, Xs) :- !.
+swap(0, J, [X|Xs], [Y|Ys]) :-
+  J > 0,
+  JMinus1 is J - 1,
+  nth0(JMinus1, Xs, Y),
+  set_at(JMinus1, X, Xs, Ys),
+  !.
+swap(I, 0, Xs, Ys) :-
+  swap(0, I, Xs, Ys),
+  !.
+swap(I, J, [X|Xs], [X|Ys]) :-
+  IMinus1 is I - 1,
+  JMinus1 is J - 1,
+  swap(IMinus1, JMinus1, Xs, Ys).
+
 middle(Xs, X) :-
   length(Xs, L),
   I is div(L, 2),
