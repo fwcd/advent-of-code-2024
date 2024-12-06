@@ -8,6 +8,7 @@ const String = []u8;
 const Matrix = List(String);
 const Vec2 = struct { x: i32, y: i32 };
 const Guard = struct { pos: Vec2, dir: Vec2 };
+const Walk = struct { visited: Set(Vec2), loops: bool };
 
 fn Set(comptime T: type) type {
     return Map(T, void);
@@ -41,6 +42,10 @@ fn get(pos: Vec2, matrix: Matrix) u8 {
     return matrix.items[@intCast(pos.y)][@intCast(pos.x)];
 }
 
+fn set(pos: Vec2, c: u8, matrix: Matrix) void {
+    matrix.items[@intCast(pos.y)][@intCast(pos.x)] = c;
+}
+
 fn parseDirection(c: u8) ?Vec2 {
     return switch (c) {
         '^' => .{ .x = 0, .y = -1 },
@@ -63,21 +68,30 @@ fn findStart(matrix: Matrix) Guard {
     std.debug.panic("Could not find start", .{});
 }
 
-fn patrol(matrix: Matrix) !Set(Vec2) {
+fn walkFrom(start: Guard, matrix: Matrix, extraObstacle: ?Vec2) !Walk {
     var visited = Set(Vec2).init(allocator);
-    var guard = findStart(matrix);
+    var visitedGuards = Set(Guard).init(allocator);
+    var guard = start;
+
+    defer {
+        visitedGuards.deinit();
+    }
 
     while (inBounds(guard.pos, matrix)) {
+        if (visitedGuards.contains(guard)) {
+            return .{ .visited = visited, .loops = true };
+        }
         try visited.put(guard.pos, {});
+        try visitedGuards.put(guard, {});
         const next = step(guard);
-        if (inBounds(next.pos, matrix) and get(next.pos, matrix) == '#') {
+        if (inBounds(next.pos, matrix) and ((extraObstacle != null and std.meta.eql(next.pos, extraObstacle.?)) or get(next.pos, matrix) == '#')) {
             guard.dir = turnRight(guard.dir);
         } else {
             guard = next;
         }
     }
 
-    return visited;
+    return .{ .visited = visited, .loops = false };
 }
 
 pub fn main() !u8 {
@@ -110,8 +124,30 @@ pub fn main() !u8 {
         std.log.debug("{s}", .{line});
     }
 
-    const part1 = (try patrol(matrix)).count();
+    const start = findStart(matrix);
+    var walk = try walkFrom(start, matrix, null);
+    defer {
+        walk.visited.deinit();
+    }
+
+    const part1 = walk.visited.count();
     std.log.debug("Part 1: {}", .{part1});
+
+    var part2: usize = 0;
+    var walkIterator = walk.visited.keyIterator();
+    while (walkIterator.next()) |pos| {
+        if (!std.meta.eql(pos.*, start.pos)) {
+            var walkWithObstacle = try walkFrom(start, matrix, pos.*);
+            defer {
+                walkWithObstacle.visited.deinit();
+            }
+            if (walkWithObstacle.loops) {
+                part2 += 1;
+            }
+        }
+    }
+
+    std.log.debug("Part 2: {}", .{part2});
 
     return 0;
 }
