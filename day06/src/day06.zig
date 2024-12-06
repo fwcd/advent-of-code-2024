@@ -122,9 +122,7 @@ pub fn main() !u8 {
 
     const start = findStart(matrix);
     var walk = try walkFrom(start, matrix, null);
-    defer {
-        walk.visited.deinit();
-    }
+    defer walk.visited.deinit();
 
     const part1 = walk.visited.count();
     std.log.debug("Part 1: {}", .{part1});
@@ -134,9 +132,7 @@ pub fn main() !u8 {
     while (walkIterator.next()) |pos| {
         if (!std.meta.eql(pos.*, start.pos)) {
             var walkWithObstacle = try walkFrom(start, matrix, pos.*);
-            defer {
-                walkWithObstacle.visited.deinit();
-            }
+            defer walkWithObstacle.visited.deinit();
             if (walkWithObstacle.loops) {
                 part2 += 1;
             }
