@@ -138,7 +138,6 @@ pub fn main() !u8 {
             }
         }
     }
-
     std.log.debug("Part 2: {}", .{part2});
 
     return 0;
