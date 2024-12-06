@@ -42,10 +42,6 @@ fn get(pos: Vec2, matrix: Matrix) u8 {
     return matrix.items[@intCast(pos.y)][@intCast(pos.x)];
 }
 
-fn set(pos: Vec2, c: u8, matrix: Matrix) void {
-    matrix.items[@intCast(pos.y)][@intCast(pos.x)] = c;
-}
-
 fn parseDirection(c: u8) ?Vec2 {
     return switch (c) {
         '^' => .{ .x = 0, .y = -1 },
