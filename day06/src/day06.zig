@@ -122,7 +122,7 @@ pub fn main() !u8 {
     defer walk.visited.deinit();
 
     const part1 = walk.visited.count();
-    std.log.debug("Part 1: {}", .{part1});
+    std.log.info("Part 1: {}", .{part1});
 
     var part2: usize = 0;
     var walkIterator = walk.visited.keyIterator();
@@ -135,7 +135,7 @@ pub fn main() !u8 {
             }
         }
     }
-    std.log.debug("Part 2: {}", .{part2});
+    std.log.info("Part 2: {}", .{part2});
 
     return 0;
 }
