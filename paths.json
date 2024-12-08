@@ -46,5 +46,12 @@
     },
     "path": "day06/src/day06.zig",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "haskell",
+      "name": "Curry"
+    },
+    "path": "day07/src/Day07.curry"
   }
 ]
