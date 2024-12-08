@@ -54,5 +54,12 @@
     },
     "path": "day07/src/Day07.curry",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "php",
+      "name": "PHP"
+    },
+    "path": "day08/src/day08.php"
   }
 ]
