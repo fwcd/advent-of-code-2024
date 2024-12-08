@@ -104,7 +104,11 @@ $width = strlen($matrix[0]);
 $freqLocs = findFrequencyLocations($matrix, $width, $height);
 $antennas = findAntennas($freqLocs, $width, $height);
 
-foreach (array_keys(findAntinodes($freqLocs, $width, $height)) as $rawAntinode) {
+$antinodes1 = findAntinodes($freqLocs, $width, $height, false, 1);
+$antinodes2 = findAntinodes($freqLocs, $width, $height);
+
+// Draw the antinode pattern for fun and profit
+foreach (array_keys($antinodes2) as $rawAntinode) {
   $antinode = Vec2::parse($rawAntinode);
   $matrix[$antinode->y][$antinode->x] = '#';
 }
@@ -113,8 +117,8 @@ foreach ($matrix as $line) {
   echo "$line" . PHP_EOL;
 }
 
-$part1 = count(findAntinodes($freqLocs, $width, $height, false, 1));
+$part1 = count($antinodes1);
 echo "Part 1: $part1" . PHP_EOL;
 
-$part2 = count(findAntinodes($freqLocs, $width, $height));
+$part2 = count($antinodes2);
 echo "Part 2: $part2" . PHP_EOL;
