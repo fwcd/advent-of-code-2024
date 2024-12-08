@@ -9,11 +9,6 @@ class Vec2 {
     $this->y = $y;
   }
 
-  static function parse(string $raw): Vec2 {
-    $split = explode(",", $raw);
-    return new Vec2(intval($split[0]), intval($split[1]));
-  }
-
   function __toString(): string {
     return "$this->x,$this->y";
   }
@@ -48,18 +43,6 @@ function findFrequencyLocations(array $matrix, int $width, int $height): array {
   }
 
   return $freqLocs;
-}
-
-function findAntennas(array $freqLocs, int $width, int $height): array {
-  $antennas = [];
-
-  foreach ($freqLocs as $freq => $locs) {
-    foreach ($locs as $loc) {
-      $antennas["$loc"] = true;
-    }
-  }
-  
-  return $antennas;
 }
 
 function findAntinodes(array $freqLocs, int $width, int $height, bool $includeStart = true, int $maxRepeats = PHP_INT_MAX): array {
@@ -102,23 +85,9 @@ $height = count($matrix);
 $width = strlen($matrix[0]);
 
 $freqLocs = findFrequencyLocations($matrix, $width, $height);
-$antennas = findAntennas($freqLocs, $width, $height);
 
-$antinodes1 = findAntinodes($freqLocs, $width, $height, false, 1);
-$antinodes2 = findAntinodes($freqLocs, $width, $height);
-
-// Draw the antinode pattern for fun and profit
-foreach (array_keys($antinodes2) as $rawAntinode) {
-  $antinode = Vec2::parse($rawAntinode);
-  $matrix[$antinode->y][$antinode->x] = '#';
-}
-
-foreach ($matrix as $line) {
-  echo "$line" . PHP_EOL;
-}
-
-$part1 = count($antinodes1);
+$part1 = count(findAntinodes($freqLocs, $width, $height, false, 1));
 echo "Part 1: $part1" . PHP_EOL;
 
-$part2 = count($antinodes2);
+$part2 = count(findAntinodes($freqLocs, $width, $height));
 echo "Part 2: $part2" . PHP_EOL;
