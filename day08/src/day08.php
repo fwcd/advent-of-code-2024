@@ -29,6 +29,10 @@ class Vec2 {
   function sub(Vec2 $rhs): Vec2 {
     return new Vec2($this->x - $rhs->x, $this->y - $rhs->y);
   }
+
+  function scale(int $factor): Vec2 {
+    return new Vec2($this->x * $factor, $this->y * $factor);
+  }
 }
 
 function findFrequencyLocations(array $matrix, int $width, int $height): array {
@@ -58,17 +62,24 @@ function findAntennas(array $freqLocs, int $width, int $height): array {
   return $antennas;
 }
 
-function findAntinodes(array $freqLocs, int $width, int $height): array {
+function findAntinodes(array $freqLocs, int $width, int $height, bool $includeStart = true, int $maxRepeats = PHP_INT_MAX): array {
   $antinodes = [];
 
   foreach ($freqLocs as $freq => $locs) {
     for ($i = 0; $i < count($locs); $i++) {
       for ($j = $i + 1; $j < count($locs); $j++) {
         $diff = $locs[$j]->sub($locs[$i]);
-        echo "{$locs[$i]} to {$locs[$j]} -> $diff" . PHP_EOL;
-        foreach ([$locs[$i]->sub($diff), $locs[$j]->add($diff)] as $antinode) {
-          if ($antinode->inBounds($width, $height)) {
-            $antinodes["$antinode"] = true;
+        foreach ([-1 => $locs[$i], 1 => $locs[$j]] as $dir => $start) {
+          if ($includeStart) {
+            $antinodes["$start"] = true;
+          }
+          $delta = $diff->scale($dir);
+          $pos = $start->add($delta);
+          $k = 0;
+          while ($k < $maxRepeats && $pos->inBounds($width, $height)) {
+            $antinodes["$pos"] = true;
+            $pos = $pos->add($delta);
+            $k++;
           }
         }
       }
@@ -92,9 +103,8 @@ $width = strlen($matrix[0]);
 
 $freqLocs = findFrequencyLocations($matrix, $width, $height);
 $antennas = findAntennas($freqLocs, $width, $height);
-$antinodes = findAntinodes($freqLocs, $width, $height);
 
-foreach (array_keys($antinodes) as $rawAntinode) {
+foreach (array_keys(findAntinodes($freqLocs, $width, $height)) as $rawAntinode) {
   $antinode = Vec2::parse($rawAntinode);
   $matrix[$antinode->y][$antinode->x] = '#';
 }
@@ -103,5 +113,8 @@ foreach ($matrix as $line) {
   echo "$line" . PHP_EOL;
 }
 
-$part1 = count($antinodes);
+$part1 = count(findAntinodes($freqLocs, $width, $height, false, 1));
 echo "Part 1: $part1" . PHP_EOL;
+
+$part2 = count(findAntinodes($freqLocs, $width, $height));
+echo "Part 2: $part2" . PHP_EOL;
