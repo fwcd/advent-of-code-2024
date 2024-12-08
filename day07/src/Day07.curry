@@ -15,9 +15,14 @@ parseEquation raw = Equation lhs rhs
 
 isSolvable :: [Int -> Int -> Int] -> Equation -> Bool
 isSolvable ops = notEmpty . set1 isSolvable'
-  where evalAcc acc []     = acc
-        evalAcc acc (v:vs) = anyOf $ (\op -> evalAcc (op acc v) vs) <$> ops
-        isSolvable' (Equation l (r:rs)) | l =:= evalAcc r rs = True
+  where
+    isSolvable' (Equation l (r:rs)) | l =:= evalAcc r rs = True
+      where
+        -- Prune branches that already overshoot the target
+        evalAcc acc vals | acc > l   = failed
+                         | otherwise = case vals of
+            []     -> acc
+            (v:vs) -> anyOf $ (\op -> evalAcc (op acc v) vs) <$> ops
 
 totalResult :: [Int -> Int -> Int] -> [Equation] -> Int
 totalResult ops eqns = sum $ lhs <$> filter (isSolvable ops) eqns
