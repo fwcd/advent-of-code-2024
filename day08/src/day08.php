@@ -18,6 +18,10 @@ class Vec2 {
     return "$this->x,$this->y";
   }
 
+  function inBounds(int $width, int $height): bool {
+    return $this->x >= 0 && $this->x < $width && $this->y >= 0 && $this->y < $height;
+  }
+
   function add(Vec2 $rhs): Vec2 {
     return new Vec2($this->x + $rhs->x, $this->y + $rhs->y);
   }
@@ -31,12 +35,10 @@ function findFrequencyLocations(array $matrix, int $width, int $height): array {
   $freqLocs = [];
 
   for ($y = 0; $y < $height; $y++) {
-    if (strlen($matrix[$y]) > 0) {
-      for ($x = 0; $x < $width; $x++) {
-        $cell = $matrix[$y][$x];
-        if ($cell != '.') {
-          $freqLocs[$cell] = [...($freqLocs[$cell] ?? []), new Vec2($x, $y)];
-        }
+    for ($x = 0; $x < $width; $x++) {
+      $cell = $matrix[$y][$x];
+      if ($cell != '.') {
+        $freqLocs[$cell] = [...($freqLocs[$cell] ?? []), new Vec2($x, $y)];
       }
     }
   }
@@ -56,7 +58,7 @@ function findAntennas(array $freqLocs, int $width, int $height): array {
   return $antennas;
 }
 
-function findAntinodes(array $antennas, array $freqLocs, int $width, int $height): array {
+function findAntinodes(array $freqLocs, int $width, int $height): array {
   $antinodes = [];
 
   foreach ($freqLocs as $freq => $locs) {
@@ -65,7 +67,7 @@ function findAntinodes(array $antennas, array $freqLocs, int $width, int $height
         $diff = $locs[$j]->sub($locs[$i]);
         echo "{$locs[$i]} to {$locs[$j]} -> $diff" . PHP_EOL;
         foreach ([$locs[$i]->sub($diff), $locs[$j]->add($diff)] as $antinode) {
-          if (!array_key_exists("$antinode", $antennas)) {
+          if ($antinode->inBounds($width, $height)) {
             $antinodes["$antinode"] = true;
           }
         }
@@ -83,14 +85,14 @@ if ($argc <= 1) {
 
 $filePath = $argv[1];
 $raw = file_get_contents($filePath);
-$matrix = preg_split('/\R/', $raw);
+$matrix = array_slice(preg_split('/\R/', $raw), 0, -1);
 
 $height = count($matrix);
 $width = strlen($matrix[0]);
 
 $freqLocs = findFrequencyLocations($matrix, $width, $height);
 $antennas = findAntennas($freqLocs, $width, $height);
-$antinodes = findAntinodes($antennas, $freqLocs, $width, $height);
+$antinodes = findAntinodes($freqLocs, $width, $height);
 
 foreach (array_keys($antinodes) as $rawAntinode) {
   $antinode = Vec2::parse($rawAntinode);
