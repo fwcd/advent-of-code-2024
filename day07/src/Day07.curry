@@ -1,4 +1,4 @@
-{-# OPTIONS_FRONTEND -Wno-overlapping -Wno-incomplete-patterns #-}
+{-# OPTIONS_FRONTEND -Wno-incomplete-patterns #-}
 
 import Control.Search.SetFunctions (set1, notEmpty)
 import Data.List (splitOn, sum)
@@ -15,10 +15,9 @@ parseEquation raw = Equation lhs rhs
 
 isSolvable :: [Int -> Int -> Int] -> Equation -> Bool
 isSolvable ops = notEmpty . set1 isSolvable'
-  -- NOTE: We evaluate in reverse to implement the desired left-associativity
-  where evalReverse [v]    = v
-        evalReverse (v:vs) = anyOf $ (\op -> op (evalReverse vs) v) <$> ops
-        isSolvable' (Equation l r) | l =:= evalReverse (reverse r) = True
+  where evalAcc acc []     = acc
+        evalAcc acc (v:vs) = anyOf $ (\op -> evalAcc (op acc v) vs) <$> ops
+        isSolvable' (Equation l (r:rs)) | l =:= evalAcc r rs = True
 
 totalResult :: [Int -> Int -> Int] -> [Equation] -> Int
 totalResult ops eqns = sum $ lhs <$> filter (isSolvable ops) eqns
