@@ -60,6 +60,7 @@
       "codemirror": "php",
       "name": "PHP"
     },
-    "path": "day08/src/day08.php"
+    "path": "day08/src/day08.php",
+    "completed": true
   }
 ]
