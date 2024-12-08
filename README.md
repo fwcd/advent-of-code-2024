@@ -12,7 +12,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 04**](day04): [C](day04/src/day04.c)
 - [x] [**Day 05**](day05): [Prolog](day05/src/day05.pl)
 - [x] [**Day 06**](day06): [Zig](day06/src/day06.zig)
-- [ ] [**Day 07**](day07): [Curry](day07/src/Day07.curry)
+- [x] [**Day 07**](day07): [Curry](day07/src/Day07.curry)
 
 ## Development
 
