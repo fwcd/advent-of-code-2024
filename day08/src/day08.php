@@ -7,4 +7,8 @@ if ($argc <= 1) {
 
 $filePath = $argv[1];
 $raw = file_get_contents($filePath);
-echo $raw;
+$input = preg_split('/\R/', $raw);
+
+foreach ($input as $line) {
+  echo $line . PHP_EOL;
+}
