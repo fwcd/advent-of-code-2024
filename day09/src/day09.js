@@ -5,20 +5,24 @@ function defragment(blocks, wholeFiles) {
 
   for (let i = 0; i < blocks.length; i++) {
     const current = blocks[i];
-    const last = blocks[blocks.length - 1];
-    if (current.free > 0) {
-      const moved = Math.min(last.count, current.free);
-      if (moved > 0 && (!wholeFiles || moved === last.count)) {
-        blocks.splice(i + 1, 0, {
-          value: last.value,
-          count: moved,
-          free: current.free - moved,
-        });
-        current.free = 0;
-        last.count -= moved;
-      }
-      if (last.count === 0) {
-        blocks.pop();
+    for (let j = blocks.length - 1; j > i; j--) {
+      const candidate = blocks[j];
+      if (current.free > 0) {
+        const moved = Math.min(candidate.count, current.free);
+        if (moved > 0 && (!wholeFiles || moved === candidate.count)) {
+          blocks.splice(i + 1, 0, {
+            value: candidate.value,
+            count: moved,
+            free: current.free - moved,
+          });
+          current.free = 0;
+          candidate.count -= moved;
+          changed = true;
+        }
+        if (candidate.count === 0) {
+          // NOTE: candidate shifted from j to j + 1 at earlier splice
+          blocks.splice(j + 1, 1);
+        }
       }
     }
   }
@@ -52,8 +56,14 @@ const blocks = [...Array(Math.ceil(input.length / 2))]
     free: input[2 * i + 1] ?? 0
   }));
 
-const part1 = checksum(defragment(blocks, false));
+const blocks1 = defragment(blocks, false);
+console.log(blocks1);
+
+const blocks2 = defragment(blocks, true);
+console.log(blocks2);
+
+const part1 = checksum(blocks1);
 console.log(`Part 1: ${part1}`);
 
-const part2 = checksum(defragment(blocks, true));
+const part2 = checksum(blocks2);
 console.log(`Part 2: ${part2}`);
