@@ -68,6 +68,7 @@
       "codemirror": "javascript",
       "name": "JavaScript"
     },
-    "path": "day09/src/day09.js"
+    "path": "day09/src/day09.js",
+    "completed": true
   }
 ]
