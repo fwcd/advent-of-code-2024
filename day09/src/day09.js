@@ -13,18 +13,16 @@ function defragment1(blocks) {
     const current = blocks[i];
     for (let j = blocks.length - 1; j > i; j--) {
       const candidate = blocks[j];
-      if (current.free > 0) {
-        const moved = Math.min(candidate.count, current.free);
-        if (moved > 0) {
-          blocks.splice(i + 1, 0, {
-            value: candidate.value,
-            count: moved,
-            free: current.free - moved,
-          });
-          current.free = 0;
-          candidate.count -= moved;
-          break;
-        }
+      const moved = Math.min(candidate.count, current.free);
+      if (moved > 0) {
+        blocks.splice(i + 1, 0, {
+          value: candidate.value,
+          count: moved,
+          free: current.free - moved,
+        });
+        current.free = 0;
+        candidate.count -= moved;
+        break;
       }
     }
   }
@@ -39,20 +37,18 @@ function defragment2(blocks) {
     const candidate = blocks[j];
     for (let i = 0; i < j; i++) {
       const current = blocks[i];
-      if (current.free > 0) {
-        const moved = Math.min(candidate.count, current.free);
-        if (moved > 0 && moved === candidate.count) {
-          blocks.splice(i + 1, 0, {
-            value: candidate.value,
-            count: moved,
-            free: current.free - moved,
-          });
-          j++;
-          current.free = 0;
-          candidate.count -= moved;
-          blocks[j].free += moved;
-          break;
-        }
+      const moved = Math.min(candidate.count, current.free);
+      if (moved > 0 && moved === candidate.count) {
+        blocks.splice(i + 1, 0, {
+          value: candidate.value,
+          count: moved,
+          free: current.free - moved,
+        });
+        j++;
+        current.free = 0;
+        candidate.count -= moved;
+        blocks[j].free += moved;
+        break;
       }
     }
   }
