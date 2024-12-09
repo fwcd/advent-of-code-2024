@@ -62,5 +62,12 @@
     },
     "path": "day08/src/day08.php",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "javascript",
+      "name": "JavaScript"
+    },
+    "path": "day09/src/day09.js"
   }
 ]
