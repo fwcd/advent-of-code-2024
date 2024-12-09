@@ -6,7 +6,6 @@ function pretty(blocks) {
 
 function defragment1(blocks) {
   blocks = JSON.parse(JSON.stringify(blocks));
-  console.log(pretty(blocks));
 
   for (let i = 0; i < blocks.length - 1; i++) {
     const current = blocks[i];
@@ -22,11 +21,6 @@ function defragment1(blocks) {
           });
           current.free = 0;
           candidate.count -= moved;
-          if (candidate.count === 0) {
-            // NOTE: candidate shifted from j to j + 1 at earlier splice
-            blocks.splice(j + 1, 1);
-          }
-          console.log(pretty(blocks));
           break;
         }
       }
@@ -38,7 +32,6 @@ function defragment1(blocks) {
 
 function defragment2(blocks) {
   blocks = JSON.parse(JSON.stringify(blocks));
-  console.log(pretty(blocks));
 
   for (let j = blocks.length - 1; j >= 0; j--) {
     const candidate = blocks[j];
@@ -47,6 +40,7 @@ function defragment2(blocks) {
       if (current.free > 0) {
         const moved = Math.min(candidate.count, current.free);
         if (moved > 0 && moved === candidate.count) {
+          console.log(candidate);
           blocks.splice(i + 1, 0, {
             value: candidate.value,
             count: moved,
@@ -54,11 +48,7 @@ function defragment2(blocks) {
           });
           current.free = 0;
           candidate.count -= moved;
-          if (candidate.count === 0) {
-            // NOTE: candidate shifted from j to j + 1 at earlier splice
-            blocks.splice(j + 1, 1);
-          }
-          console.log(pretty(blocks));
+          blocks[j].free += moved;
           break;
         }
       }
@@ -76,6 +66,7 @@ function checksum(blocks) {
       sum += i * block.value;
       i++;
     }
+    i += block.free;
   }
   return sum;
 }
