@@ -70,5 +70,12 @@
     },
     "path": "day09/src/day09.js",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "groovy",
+      "name": "Groovy"
+    },
+    "path": "day10/src/day10.groovy"
   }
 ]
