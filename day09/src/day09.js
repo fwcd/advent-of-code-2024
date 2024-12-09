@@ -44,7 +44,7 @@ function defragment2(blocks) {
           count: moved,
           free: current.free - moved,
         });
-        j++;
+        j++; // j is shifting up due to the splice/insert above
         current.free = 0;
         candidate.count -= moved;
         blocks[j].free += moved;
