@@ -42,12 +42,12 @@ function defragment2(blocks) {
       if (current.free > 0) {
         const moved = Math.min(candidate.count, current.free);
         if (moved > 0 && moved === candidate.count) {
-          console.log(candidate);
           blocks.splice(i + 1, 0, {
             value: candidate.value,
             count: moved,
             free: current.free - moved,
           });
+          j++;
           current.free = 0;
           candidate.count -= moved;
           blocks[j].free += moved;
