@@ -5,6 +5,9 @@ if (args.length == 0) {
   System.exit(1)
 }
 
-String input = new File(args[0]).text
+List<List<Integer>> input = new File(args[0]).text
+  .lines()
+  .map { it.chars().map { it - (int) '0' }.toList() }
+  .toList()
 
 println "Input: $input"
