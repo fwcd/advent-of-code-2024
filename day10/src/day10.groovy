@@ -5,9 +5,6 @@ record Vec2(int x, int y) {}
 class TopoMap {
   private List<List<Integer>> values
 
-  int part1 = 0
-  int part2 = 0
-
   TopoMap(List<List<Integer>> values) {
     this.values = values
   }
