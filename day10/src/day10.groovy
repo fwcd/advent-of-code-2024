@@ -18,22 +18,18 @@ class TopoMap {
 
   def get(Vec2 pos) { values[pos.y][pos.x] }
 
-  def traceTrail(Vec2 pos, boolean isPart1, Set<Vec2> visited = new HashSet()) {
-    if (isPart1) {
+  def traceTrail(Vec2 pos, Set<Vec2> visited) {
+    if (visited != null) {
       if (pos in visited) {
-        return
+        return 0
       }
-
       visited.add(pos)
     }
 
     int value = get(pos)
+    int score = 0
     if (value == 0) {
-      if (isPart1) {
-        part1++
-      } else {
-        part2++
-      }
+      score++
     }
 
     for (int dy in (-1..1)) {
@@ -41,11 +37,13 @@ class TopoMap {
         if (dy == 0 ^ dx == 0) {
           Vec2 neigh = new Vec2(pos.x + dx, pos.y + dy)
           if (neigh.y >= 0 && neigh.y < height && neigh.x >= 0 && neigh.x < width && get(neigh) == value - 1) {
-            traceTrail(neigh, isPart1, visited)
+            score += traceTrail(neigh, visited)
           }
         }
       }
     }
+
+    return score
   }
 }
 
@@ -54,23 +52,21 @@ if (args.length == 0) {
   System.exit(1)
 }
 
-List<List<Integer>> values = new File(args[0]).text
-  .lines()
-  .map { it.chars().map { it - (int) '0' }.toList() }
-  .toList()
-
+List<List<Integer>> values = new File(args[0]).text.lines().map { it.chars().map { it - (int) '0' }.toList() }.toList()
 TopoMap topoMap = new TopoMap(values)
+
+int part1 = 0
+int part2 = 0
 
 for (int y in 0..<topoMap.height) {
   for (int x in 0..<topoMap.width) {
     Vec2 pos = new Vec2(x, y)
     if (topoMap.get(pos) == 9) {
-      for (boolean isPart1 in [true, false]) {
-        topoMap.traceTrail(pos, isPart1)
-      }
+      part1 += topoMap.traceTrail(pos, new HashSet())
+      part2 += topoMap.traceTrail(pos, null)
     }
   }
 }
 
-println "Part 1: $topoMap.part1"
-println "Part 2: $topoMap.part2"
+println "Part 1: $part1"
+println "Part 2: $part2"
