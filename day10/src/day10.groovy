@@ -6,6 +6,7 @@ class TopoMap {
   private List<List<Integer>> values
 
   int part1 = 0
+  int part2 = 0
 
   TopoMap(List<List<Integer>> values) {
     this.values = values
@@ -17,16 +18,22 @@ class TopoMap {
 
   def get(Vec2 pos) { values[pos.y][pos.x] }
 
-  def traceTrail(Vec2 pos, Set<Vec2> visited = new HashSet()) {
-    if (pos in visited) {
-      return
-    }
+  def traceTrail(Vec2 pos, boolean isPart1, Set<Vec2> visited = new HashSet()) {
+    if (isPart1) {
+      if (pos in visited) {
+        return
+      }
 
-    visited.add(pos)
+      visited.add(pos)
+    }
 
     int value = get(pos)
     if (value == 0) {
-      part1++
+      if (isPart1) {
+        part1++
+      } else {
+        part2++
+      }
     }
 
     for (int dy in (-1..1)) {
@@ -34,7 +41,7 @@ class TopoMap {
         if (dy == 0 ^ dx == 0) {
           Vec2 neigh = new Vec2(pos.x + dx, pos.y + dy)
           if (neigh.y >= 0 && neigh.y < height && neigh.x >= 0 && neigh.x < width && get(neigh) == value - 1) {
-            traceTrail(neigh, visited)
+            traceTrail(neigh, isPart1, visited)
           }
         }
       }
@@ -58,9 +65,12 @@ for (int y in 0..<topoMap.height) {
   for (int x in 0..<topoMap.width) {
     Vec2 pos = new Vec2(x, y)
     if (topoMap.get(pos) == 9) {
-      topoMap.traceTrail(pos)
+      for (boolean isPart1 in [true, false]) {
+        topoMap.traceTrail(pos, isPart1)
+      }
     }
   }
 }
 
 println "Part 1: $topoMap.part1"
+println "Part 2: $topoMap.part2"
