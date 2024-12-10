@@ -76,6 +76,7 @@
       "codemirror": "groovy",
       "name": "Groovy"
     },
-    "path": "day10/src/day10.groovy"
+    "path": "day10/src/day10.groovy",
+    "completed": true
   }
 ]

@@ -15,7 +15,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 07**](day07): [Curry](day07/src/Day07.curry)
 - [x] [**Day 08**](day08): [PHP](day08/src/day08.php)
 - [x] [**Day 09**](day09): [JavaScript](day09/src/day09.js)
-- [ ] [**Day 10**](day10): [Groovy](day10/src/day10.groovy)
+- [x] [**Day 10**](day10): [Groovy](day10/src/day10.groovy)
 
 ## Development
 
