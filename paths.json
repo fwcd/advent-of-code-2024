@@ -78,5 +78,12 @@
     },
     "path": "day10/src/day10.groovy",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "lua",
+      "name": "Lua"
+    },
+    "path": "day11/src/day11.lua"
   }
 ]
