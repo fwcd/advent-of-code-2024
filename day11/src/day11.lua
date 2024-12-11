@@ -64,3 +64,6 @@ end
 
 part1 = count(simulate(stones, 25))
 print('Part 1: ' .. tostring(part1))
+
+part2 = count(simulate(stones, 75))
+print('Part 2: ' .. tostring(part2))
