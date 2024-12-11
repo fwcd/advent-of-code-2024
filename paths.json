@@ -84,6 +84,7 @@
       "codemirror": "lua",
       "name": "Lua"
     },
-    "path": "day11/src/day11.lua"
+    "path": "day11/src/day11.lua",
+    "completed": true
   }
 ]
