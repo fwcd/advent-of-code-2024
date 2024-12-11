@@ -1,19 +1,5 @@
 #!/usr/bin/env lua
 
-function copy(table)
-  local copied = {}
-  for k, v in pairs(table) do
-    copied[k] = v
-  end
-  return copied
-end
-
-function dump(table)
-  for k, v in pairs(table) do
-    print(tostring(k) .. ' => ' .. tostring(v))
-  end
-end
-
 function add(stone, n, stones)
   stones[stone] = (stones[stone] or 0) + n
 end
