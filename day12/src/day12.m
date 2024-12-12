@@ -31,24 +31,25 @@
 
 @interface Region : NSObject
 
+@property(nonatomic) char plant;
 @property(nonatomic) int perimeter;
+@property(nonatomic) int sides;
 @property(nonatomic) int area;
+
+@property(nonatomic, retain) Vec2 *lastBoundaryPos;
+@property(nonatomic, retain) Vec2 *lastBoundaryDir;
 
 @end
 
 @implementation Region
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"Region[perimeter=%d, area=%d]", self.perimeter, self.area];
-}
-
-- (int)price {
-  return self.perimeter * self.area;
+  return [NSString stringWithFormat:@"Region[plant=%c, perimeter=%d, sides=%d, area=%d]", self.plant, self.perimeter, self.sides, self.area];
 }
 
 @end
 
-char charAt(Vec2 *pos, NSArray<NSString *> *matrix) {
+char plantAt(Vec2 *pos, NSArray<NSString *> *matrix) {
   return [matrix[pos.y] characterAtIndex:pos.x];
 }
 
@@ -56,17 +57,17 @@ bool inBounds(Vec2 *pos, NSArray<NSString *> *matrix) {
   return pos.x >= 0 && pos.x < matrix[0].length && pos.y >= 0 && pos.y < matrix.count;
 }
 
-void dfsRegion(Vec2 *pos, char c, NSArray<NSString *> *matrix, NSMutableSet<Vec2 *> *visited, Region *region) {
+void dfsRegion(Vec2 *pos, NSArray<NSString *> *matrix, NSMutableSet<Vec2 *> *visited, Region *region) {
   region.area++;
 
   for (int dy = -1; dy <= 1; dy++) {
     for (int dx = -1; dx <= 1; dx++) {
       if (dx == 0 ^ dy == 0) {
         Vec2 *neigh = [[Vec2 alloc] initWithX:pos.x + dx y:pos.y + dy];
-        if (inBounds(neigh, matrix) && charAt(neigh, matrix) == c) {
+        if (inBounds(neigh, matrix) && plantAt(neigh, matrix) == region.plant) {
           if (![visited containsObject:neigh]) {
             [visited addObject:neigh];
-            dfsRegion(neigh, c, matrix, visited, region);
+            dfsRegion(neigh, matrix, visited, region);
           }
         } else {
           region.perimeter++;
@@ -85,9 +86,9 @@ NSArray<Region *> *findRegions(NSArray<NSString *> *matrix) {
       Vec2 *pos = [[Vec2 alloc] initWithX:x y:y];
       if (![visited containsObject:pos]) {
         [visited addObject:pos];
-        char c = charAt(pos, matrix);
         Region *region = [[Region alloc] init];
-        dfsRegion(pos, c, matrix, visited, region);
+        region.plant = plantAt(pos, matrix);
+        dfsRegion(pos, matrix, visited, region);
         [regions addObject:region];
       }
     }
@@ -108,12 +109,16 @@ int main(void) {
 
   NSArray<NSString *> *matrix = [input componentsSeparatedByString:@"\n"];
   NSArray<Region *> *regions = findRegions(matrix);
+  NSLog(@"Regions: %@", regions);
 
   int part1 = 0;
+  int part2 = 0;
   for (Region *region in regions) {
-    part1 += region.price;
+    part1 += region.perimeter * region.area;
+    part2 += region.sides * region.area;
   }
   NSLog(@"Part 1: %d", part1);
+  NSLog(@"Part 2: %d", part2);
 
   return 0;
 }
