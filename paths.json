@@ -92,6 +92,7 @@
       "codemirror": "clike",
       "name": "Objective-C"
     },
-    "path": "day12/src/day12.m"
+    "path": "day12/src/day12.m",
+    "completed": true
   }
 ]
