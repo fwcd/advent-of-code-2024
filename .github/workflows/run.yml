@@ -17,6 +17,10 @@ jobs:
         # https://github.com/fwcd/advent-of-code-2024/actions/runs/12202208638/job/34042374507
         - os: 'macos-latest'
           day: '06'
+        # TODO: Figure out how to make this run using GNUstep
+        # https://github.com/fwcd/advent-of-code-2024/actions/runs/12301122542/job/34330958377
+        - os: 'ubuntu-latest'
+          day: '12'
 
     steps:
     - uses: actions/checkout@v4
