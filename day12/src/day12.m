@@ -76,8 +76,8 @@ void dfsRegion(Vec2 *pos, char c, NSArray<NSString *> *matrix, NSMutableSet<Vec2
   }
 }
 
-NSDictionary<NSString *, Region *> *findRegions(NSArray<NSString *> *matrix) {
-  NSMutableDictionary<NSString *, Region *> *regions = [[NSMutableDictionary alloc] init];
+NSArray<Region *> *findRegions(NSArray<NSString *> *matrix) {
+  NSMutableArray<Region *> *regions = [[NSMutableArray alloc] init];
   NSMutableSet<Vec2 *> *visited = [[NSMutableSet alloc] init];
 
   for (int y = 0; y < matrix.count; y++) {
@@ -88,7 +88,7 @@ NSDictionary<NSString *, Region *> *findRegions(NSArray<NSString *> *matrix) {
         char c = charAt(pos, matrix);
         Region *region = [[Region alloc] init];
         dfsRegion(pos, c, matrix, visited, region);
-        regions[[NSString stringWithFormat:@"%c", c]] = region;
+        [regions addObject:region];
       }
     }
   }
@@ -107,8 +107,13 @@ int main(void) {
   input = [input stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
 
   NSArray<NSString *> *matrix = [input componentsSeparatedByString:@"\n"];
-  NSDictionary<NSString *, Region *> *regions = findRegions(matrix);
-  NSLog(@"Regions: %@", regions);
+  NSArray<Region *> *regions = findRegions(matrix);
+
+  int part1 = 0;
+  for (Region *region in regions) {
+    part1 += region.price;
+  }
+  NSLog(@"Part 1: %d", part1);
 
   return 0;
 }
