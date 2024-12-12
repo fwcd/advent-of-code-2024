@@ -79,12 +79,13 @@ void dfsRegion(Vec2 *pos, NSArray<NSString *> *matrix, NSMutableSet<Vec2 *> *vis
             dfsRegion(neigh, matrix, visited, region);
           }
         } else {
+          region.perimeter++;
+
           Vec2 *dir = [[Vec2 alloc] initWithX:dx y:dy];
           if (region.boundaryPositionsByDir[dir] == nil) {
             region.boundaryPositionsByDir[dir] = [[NSMutableSet alloc] init];
           }
           [region.boundaryPositionsByDir[dir] addObject:neigh];
-          region.perimeter++;
         }
       }
     }
