@@ -20,7 +20,8 @@ for line in fileinput.input():
 
 def solve(offset: np.ndarray) -> int:
     lcombs = [np.linalg.inv(m) @ (v + offset) for m, v in zip(mats, vecs)]
-    return sum(int(np.sum(np.array([3, 1]) * np.round(lcomb))) for lcomb in lcombs if np.sum(np.abs(np.round(lcomb) - lcomb)) < 0.001)
+    solvable = [np.round(lcomb).astype(int) for lcomb in lcombs if np.sum(np.abs(np.round(lcomb) - lcomb)) < 0.001]
+    return sum(3 * lcomb[0] + lcomb[1] for lcomb in solvable)
 
 print('Part 1:', solve(np.array([0, 0])))
 print('Part 2:', solve(10000000000000 * np.array([1, 1])))
