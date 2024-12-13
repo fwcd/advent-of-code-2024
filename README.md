@@ -18,6 +18,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 10**](day10): [Groovy](day10/src/day10.groovy)
 - [x] [**Day 11**](day11): [Lua](day11/src/day11.lua)
 - [x] [**Day 12**](day12): [Objective-C](day12/src/day12.m)
+- [x] [**Day 13**](day13): [Python](day13/src/day13.py)
 
 ## Development
 
