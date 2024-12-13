@@ -13,7 +13,7 @@ for line in fileinput.input():
     if m := re.search(r'Button .: X\+(\d+), Y\+(\d+)', line):
         cols.append([int(m[1]), int(m[2])])
     elif m := re.search(r'Prize: X=(\d+), Y=(\d+)', line):
-        vecs.append(np.array(list([int(m[1]), int(m[2])])))
+        vecs.append(np.array([int(m[1]), int(m[2])]))
     elif cols:
         mats.append(np.array(cols).T)
         cols = []
