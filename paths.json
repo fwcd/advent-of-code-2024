@@ -102,5 +102,12 @@
     },
     "path": "day13/src/day13.py",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "haskell",
+      "name": "Haskell"
+    },
+    "path": "day14/src/Day14.hs"
   }
 ]
