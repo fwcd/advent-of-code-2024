@@ -9,7 +9,7 @@
 
     buildPhase = ''
       mkdir out
-      ghc -o out/day14 Day14.hs
+      ghc -o out/day14 -O2 Day14.hs
     '';
 
     installPhase = ''
