@@ -1,4 +1,4 @@
-{ stdenv, perl }:
+{ stdenv }:
   stdenv.mkDerivation {
     name = "advent-of-code-2024-day04";
     src = ./src;
