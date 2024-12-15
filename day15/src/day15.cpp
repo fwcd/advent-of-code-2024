@@ -30,6 +30,18 @@ struct Vec2 {
   }
 };
 
+template <typename T>
+std::ostream &operator<<(std::ostream &os, Vec2<T> vec) {
+  return os << vec.x << ", " << vec.y;
+}
+
+template <typename T>
+struct std::hash<Vec2<T>> {
+  std::size_t operator()(const Vec2<T> &vec) const {
+    return std::hash<T>()(vec.x) ^ std::hash<T>()(vec.y);
+  }
+};
+
 enum class Inst : char {
   Left = '<',
   Up = '^',
@@ -38,8 +50,7 @@ enum class Inst : char {
 };
 
 std::ostream &operator<<(std::ostream &os, Inst inst) {
-  os << char(inst);
-  return os;
+  return os << char(inst);
 }
 
 struct Board {
