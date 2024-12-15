@@ -110,5 +110,12 @@
     },
     "path": "day14/src/Day14.hs",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "clike",
+      "name": "C++"
+    },
+    "path": "day15/src/day15.cpp"
   }
 ]
