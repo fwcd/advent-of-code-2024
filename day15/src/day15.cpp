@@ -2,6 +2,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 template <typename T>
@@ -49,6 +50,15 @@ enum class Inst : char {
   Down = 'v',
 };
 
+Vec2<int> inst_dir(Inst inst) {
+  switch (inst) {
+  case Inst::Left: return {-1, 0};
+  case Inst::Up: return {0, -1};
+  case Inst::Right: return {1, 0};
+  case Inst::Down: return {0, 1};
+  }
+}
+
 std::ostream &operator<<(std::ostream &os, Inst inst) {
   return os << char(inst);
 }
@@ -91,36 +101,49 @@ struct Board {
     return (*this)[pos] == '#';
   }
 
+  void dfs_attached(Vec2<int> pos, Inst inst, std::unordered_set<Vec2<int>> &visited) const {
+    if (visited.contains(pos) || !in_bounds(pos) || !is_box(pos)) {
+      return;
+    }
+    visited.insert(pos);
+
+    char cell = (*this)[pos];
+    switch (cell) {
+    case '[':
+      dfs_attached({pos.x + 1, pos.y}, inst, visited);
+      break;
+    case ']':
+      dfs_attached({pos.x - 1, pos.y}, inst, visited);
+      break;
+    }
+
+    Vec2<int> dir = inst_dir(inst);
+    dfs_attached(pos + dir, inst, visited);
+  }
+
   void perform(Inst inst) {
-    Vec2<int> dir;
-    switch (inst) {
-    case Inst::Left: dir = {-1, 0}; break;
-    case Inst::Up: dir = {0, -1}; break;
-    case Inst::Right: dir = {1, 0}; break;
-    case Inst::Down: dir = {0, 1}; break;
-    }
-
+    Vec2<int> dir = inst_dir(inst);
     Vec2<int> next = robot + dir;
-    Vec2<int> end = next;
-    while (is_box(end)) {
-      end += dir;
-    }
 
-    if (!is_wall(end)) {
-      if (is_box(next) && is_space(end)) {
-        for (Vec2<int> pos = end; pos != robot; pos -= dir) {
-          Vec2<int> prev = pos - dir;
-          (*this)[pos] = (*this)[prev];
+    std::unordered_set<Vec2<int>> attached;
+    dfs_attached(next, inst, attached);
 
-          Vec2<int> offset = {1, 0};
-          switch ((*this)[pos]) {
-          case '[': std::swap((*this)[pos + offset], (*this)[prev + offset]); break;
-          case ']': std::swap((*this)[pos - offset], (*this)[prev - offset]); break;
-          }
-        }
+    for (Vec2<int> pos : attached) {
+      if (is_wall(pos + dir)) {
+        return;
       }
-      robot = next;
     }
+
+    Board board = *this;
+    for (Vec2<int> pos : attached) {
+      board[pos] = '.';
+    }
+    for (Vec2<int> pos : attached) {
+      board[pos + dir] = (*this)[pos];
+    }
+    *this = board;
+
+    robot = next;
   }
 
   int sum_box_coords() const {
