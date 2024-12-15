@@ -3,10 +3,14 @@
 #include <string>
 #include <vector>
 
-struct State {
-  std::vector<std::string> board;
-  std::string instructions;
+struct Board {
+  std::vector<std::string> rows;
   std::array<int, 2> robot = {-1, -1};
+};
+
+struct State {
+  Board board;
+  std::string instructions;
 
   static State parse_from(std::istream &istream) {
     State state;
@@ -22,14 +26,14 @@ struct State {
           int x = 0;
           for (char cell : line) {
             if (cell == '@') {
-              state.robot = {x, y};
+              state.board.robot = {x, y};
               row.push_back('.');
             } else {
               row.push_back(cell);
             }
             x++;
           }
-          state.board.push_back(row);
+          state.board.rows.push_back(row);
         }
       } else {
         state.instructions += line;
@@ -55,8 +59,8 @@ int main(int argc, char *argv[]) {
     state = State::parse_from(file);
   }
 
-  std::cout << "Robot: " << state.robot[0] << ", " << state.robot[1] << std::endl;
-  for (const std::string &row : state.board) {
+  std::cout << "Robot: " << state.board.robot[0] << ", " << state.board.robot[1] << std::endl;
+  for (const std::string &row : state.board.rows) {
     std::cout << "Row: " << row << std::endl;
   }
   std::cout << "Instructions: " << state.instructions << std::endl;
