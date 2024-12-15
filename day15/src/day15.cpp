@@ -125,6 +125,10 @@ struct Board {
     Vec2<int> dir = inst_dir(inst);
     Vec2<int> next = robot + dir;
 
+    if (is_wall(next)) {
+      return;
+    }
+
     std::unordered_set<Vec2<int>> attached;
     dfs_attached(next, inst, attached);
 
@@ -246,15 +250,9 @@ int main(int argc, char *argv[]) {
     state = State::parse_from(file);
   }
 
-  std::cout << state.board1;
-  std::cout << state.board2;
-  for (Inst inst : state.insts) {
-    state.board2.perform(inst);
-    std::cout << "After " << inst << ": " << std::endl << state.board2;
-  }
-  // state.run();
-  // std::cout << "Part 1: " << state.board1.sum_box_coords() << std::endl;
-  // std::cout << "Part 2: " << state.board2.sum_box_coords() << std::endl;
+  state.run();
+  std::cout << "Part 1: " << state.board1.sum_box_coords() << std::endl;
+  std::cout << "Part 2: " << state.board2.sum_box_coords() << std::endl;
 
   return 0;
 }
