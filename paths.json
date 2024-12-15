@@ -108,6 +108,7 @@
       "codemirror": "haskell",
       "name": "Haskell"
     },
-    "path": "day14/src/Day14.hs"
+    "path": "day14/src/Day14.hs",
+    "completed": true
   }
 ]

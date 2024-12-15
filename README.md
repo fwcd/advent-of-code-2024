@@ -19,7 +19,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 11**](day11): [Lua](day11/src/day11.lua)
 - [x] [**Day 12**](day12): [Objective-C](day12/src/day12.m)
 - [x] [**Day 13**](day13): [Python](day13/src/day13.py)
-- [ ] [**Day 14**](day14): [Haskell](day14/src/Day14.hs)
+- [x] [**Day 14**](day14): [Haskell](day14/src/Day14.hs)
 
 ## Development
 
