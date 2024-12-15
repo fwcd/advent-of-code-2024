@@ -107,37 +107,48 @@ std::ostream &operator<<(std::ostream &os, const Board &board) {
 
 struct State {
   Board board1;
+  Board board2;
   std::vector<Inst> insts;
 
   static State parse_from(std::istream &istream) {
     State state;
 
     bool in_board = true;
-    int y = 0;
     for (std::string line; std::getline(istream, line);) {
       if (in_board) {
         if (line.empty()) {
           in_board = false;
         } else {
-          std::string row;
-          int x = 0;
+          std::string row1;
+          std::string row2;
           for (char cell : line) {
             if (cell == '@') {
-              state.board1.robot = {x, y};
-              row.push_back('.');
+              int x1 = row1.size();
+              int x2 = row2.size();
+              int y1 = state.board1.rows.size();
+              int y2 = state.board2.rows.size();
+              state.board1.robot = {x1, y1};
+              state.board2.robot = {x2, y2};
+              row1.push_back('.');
+              row2 += "..";
             } else {
-              row.push_back(cell);
+              row1.push_back(cell);
+              if (cell == 'O') {
+                row2 += "[]";
+              } else {
+                row2.push_back(cell);
+                row2.push_back(cell);
+              }
             }
-            x++;
           }
-          state.board1.rows.push_back(row);
+          state.board1.rows.push_back(row1);
+          state.board2.rows.push_back(row2);
         }
       } else {
         for (char raw_inst : line) {
           state.insts.push_back(Inst(raw_inst));
         }
       }
-      y++;
     }
 
     return state;
@@ -164,11 +175,8 @@ int main(int argc, char *argv[]) {
     state = State::parse_from(file);
   }
 
-  // std::cout << state.board;
-  // for (Inst inst : state.insts) {
-  //   state.board.perform(inst);
-  //   std::cout << "After " << inst << ":" << std::endl << state.board;
-  // }
+  std::cout << state.board1;
+  std::cout << state.board2;
   state.run();
   std::cout << "Part 1: " << state.board1.sum_box_coords() << std::endl;
 
