@@ -116,6 +116,7 @@
       "codemirror": "clike",
       "name": "C++"
     },
-    "path": "day15/src/day15.cpp"
+    "path": "day15/src/day15.cpp",
+    "completed": true
   }
 ]
