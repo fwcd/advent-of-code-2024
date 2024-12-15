@@ -13,19 +13,9 @@ split x (y:ys) | x == y    = [] : split x ys
                              in (y : y') : ys'
 split _ []                 = [[]]
 
--- | Finds the period of the given function.
-period :: Ord a => (a -> a) -> a -> [a]
-period f = period' S.empty
-  where period' acc x | x `S.member` acc = []
-                      | otherwise        = x : period' (S.insert x acc) (f x)
-
 -- | The cartesian product with itself.
 cartesianSquare :: [a] -> [(a, a)]
 cartesianSquare xs = [(x, x') | x <- xs, x' <- xs]
-
--- | Finds the nth element of the list (modulo the list's length) .
-(!!%) :: [a] -> Int -> a
-xs !!% n = xs !! (n `mod` length xs)
 
 data Vec2 a = Vec2 { x :: a, y :: a }
   deriving (Show, Eq, Ord, Functor)
@@ -63,7 +53,7 @@ step :: Robot -> Robot
 step r = Robot ((r.pos .+. r.vel) .%. boardSize) r.vel
 
 stepN :: Int -> Robot -> Robot
-stepN n = (!!% n) . period step
+stepN n = (!! n) . iterate step
 
 safetyFactor :: [Robot] -> Int
 safetyFactor rs = foldr1 (*) [length $ filter (\p -> p.x `xop` center.x && p.y `yop` center.y) ps | (xop, yop) <- cartesianSquare [(<), (>)]]
