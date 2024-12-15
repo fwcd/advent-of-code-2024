@@ -106,7 +106,7 @@ std::ostream &operator<<(std::ostream &os, const Board &board) {
 }
 
 struct State {
-  Board board;
+  Board board1;
   std::vector<Inst> insts;
 
   static State parse_from(std::istream &istream) {
@@ -123,14 +123,14 @@ struct State {
           int x = 0;
           for (char cell : line) {
             if (cell == '@') {
-              state.board.robot = {x, y};
+              state.board1.robot = {x, y};
               row.push_back('.');
             } else {
               row.push_back(cell);
             }
             x++;
           }
-          state.board.rows.push_back(row);
+          state.board1.rows.push_back(row);
         }
       } else {
         for (char raw_inst : line) {
@@ -145,7 +145,7 @@ struct State {
 
   void run() {
     for (Inst inst : insts) {
-      board.perform(inst);
+      board1.perform(inst);
     }
   }
 };
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
   //   std::cout << "After " << inst << ":" << std::endl << state.board;
   // }
   state.run();
-  std::cout << "Part 1: " << state.board.sum_box_coords() << std::endl;
+  std::cout << "Part 1: " << state.board1.sum_box_coords() << std::endl;
 
   return 0;
 }
