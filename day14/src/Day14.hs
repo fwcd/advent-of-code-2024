@@ -2,9 +2,10 @@
 
 import System.Environment (getArgs)
 import System.IO (readFile')
-import Data.List (sort)
+import Data.List (findIndex)
 import qualified Data.Set as S
 import Control.Monad (join)
+import Data.Maybe (fromJust)
 
 -- | Splits on the given value.
 split :: Eq a => a -> [a] -> [[a]]
@@ -55,6 +56,15 @@ step r = Robot ((r.pos .+. r.vel) .%. boardSize) r.vel
 stepN :: Int -> Robot -> Robot
 stepN n = (!! n) . iterate step
 
+stepsUntil :: ([Robot] -> Bool) -> [Robot] -> Int
+stepsUntil p = fromJust . findIndex p . iterate (step <$>)
+
+-- Simple heuristic to check if all positions are unique.
+-- Not sure why this even works since the tree isn't the full input.
+isChristmasTree :: [Robot] -> Bool
+isChristmasTree rs = S.size (S.fromList ps) == length rs
+  where ps = (.pos) <$> rs
+
 safetyFactor :: [Robot] -> Int
 safetyFactor rs = foldr1 (*) [length $ filter (\p -> p.x `xop` center.x && p.y `yop` center.y) ps | (xop, yop) <- cartesianSquare [(<), (>)]]
   where center = boardSize ./ 2
@@ -73,6 +83,11 @@ main = do
     [path] -> do
       raw <- readFile' path
       let robots = parseRobot <$> lines raw
+          part1 = safetyFactor robots1
+          part2 = stepsUntil isChristmasTree robots
           robots1 = stepN 100 <$> robots
-      putStrLn $ "Part 1: " ++ show (safetyFactor robots1)
+          robots2 = stepN part2 <$> robots
+      putStrLn $ "Part 1: " ++ show part1
+      putStrLn $ "Part 2: " ++ show part2
+      putStrLn $ pretty robots2
     _ -> putStrLn "Usage: day14 <path to input>"
