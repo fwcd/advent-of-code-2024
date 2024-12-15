@@ -15,26 +15,7 @@ struct Vec2 {
   Vec2<T> operator+(const Vec2<T> &rhs) const {
     return {x + rhs.x, y + rhs.y};
   }
-
-  Vec2<T> operator-(const Vec2<T> &rhs) const {
-    return {x - rhs.x, y - rhs.y};
-  }
-
-  void operator+=(const Vec2<T> &rhs) {
-    x += rhs.x;
-    y += rhs.y;
-  }
-
-  void operator-=(const Vec2<T> &rhs) {
-    x -= rhs.x;
-    y -= rhs.y;
-  }
 };
-
-template <typename T>
-std::ostream &operator<<(std::ostream &os, Vec2<T> vec) {
-  return os << vec.x << ", " << vec.y;
-}
 
 template <typename T>
 struct std::hash<Vec2<T>> {
@@ -57,10 +38,6 @@ Vec2<int> inst_dir(Inst inst) {
   case Inst::Right: return {1, 0};
   case Inst::Down: return {0, 1};
   }
-}
-
-std::ostream &operator<<(std::ostream &os, Inst inst) {
-  return os << char(inst);
 }
 
 struct Board {
@@ -164,20 +141,6 @@ struct Board {
     return sum;
   }
 };
-
-std::ostream &operator<<(std::ostream &os, const Board &board) {
-  for (int y = 0; y < board.height(); y++) {
-    for (int x = 0; x < board.width(); x++) {
-      if (board.robot == Vec2<int>({x, y})) {
-        os << '@';
-      } else {
-        os << board[{x, y}];
-      }
-    }
-    os << std::endl;
-  }
-  return os;
-}
 
 struct State {
   Board board1;
