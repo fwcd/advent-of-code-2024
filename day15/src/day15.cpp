@@ -30,14 +30,14 @@ struct Vec2 {
   }
 };
 
-enum class Dir : char {
+enum class Inst : char {
   Left = '<',
   Up = '^',
   Right = '>',
   Down = 'v',
 };
 
-std::ostream &operator<<(std::ostream &os, Dir inst) {
+std::ostream &operator<<(std::ostream &os, Inst inst) {
   os << char(inst);
   return os;
 }
@@ -80,13 +80,13 @@ struct Board {
     return (*this)[pos] == '#';
   }
 
-  void perform(Dir inst) {
+  void perform(Inst inst) {
     Vec2<int> dir;
     switch (inst) {
-    case Dir::Left: dir = {-1, 0}; break;
-    case Dir::Up: dir = {0, -1}; break;
-    case Dir::Right: dir = {1, 0}; break;
-    case Dir::Down: dir = {0, 1}; break;
+    case Inst::Left: dir = {-1, 0}; break;
+    case Inst::Up: dir = {0, -1}; break;
+    case Inst::Right: dir = {1, 0}; break;
+    case Inst::Down: dir = {0, 1}; break;
     }
 
     Vec2<int> next = robot + dir;
@@ -144,7 +144,7 @@ std::ostream &operator<<(std::ostream &os, const Board &board) {
 struct State {
   Board board1;
   Board board2;
-  std::vector<Dir> insts;
+  std::vector<Inst> insts;
 
   static State parse_from(std::istream &istream) {
     State state;
@@ -182,7 +182,7 @@ struct State {
         }
       } else {
         for (char raw_inst : line) {
-          state.insts.push_back(Dir(raw_inst));
+          state.insts.push_back(Inst(raw_inst));
         }
       }
     }
@@ -191,7 +191,7 @@ struct State {
   }
 
   void run() {
-    for (Dir inst : insts) {
+    for (Inst inst : insts) {
       board1.perform(inst);
       board2.perform(inst);
     }
@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
 
   std::cout << state.board1;
   std::cout << state.board2;
-  for (Dir inst : state.insts) {
+  for (Inst inst : state.insts) {
     state.board2.perform(inst);
     std::cout << "After " << inst << ": " << std::endl << state.board2;
   }
