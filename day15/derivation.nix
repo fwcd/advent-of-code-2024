@@ -5,7 +5,7 @@
 
     buildPhase = ''
       mkdir -p out
-      $CXX -o out/day15 day15.cpp
+      $CXX -o out/day15 -std=c++20 day15.cpp
     '';
 
     installPhase = ''
