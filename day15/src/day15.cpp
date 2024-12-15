@@ -81,7 +81,8 @@ struct Board {
 
     for (int y = 0; y < height(); y++) {
       for (int x = 0; x < width(); x++) {
-        if ((*this)[{x, y}] == 'O') {
+        char cell = (*this)[{x, y}];
+        if (cell == 'O' || cell == '[') {
           sum += 100 * y + x;
         }
       }
@@ -157,6 +158,7 @@ struct State {
   void run() {
     for (Inst inst : insts) {
       board1.perform(inst);
+      board2.perform(inst);
     }
   }
 };
@@ -179,6 +181,7 @@ int main(int argc, char *argv[]) {
   std::cout << state.board2;
   state.run();
   std::cout << "Part 1: " << state.board1.sum_box_coords() << std::endl;
+  std::cout << "Part 2: " << state.board2.sum_box_coords() << std::endl;
 
   return 0;
 }
