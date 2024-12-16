@@ -126,5 +126,12 @@
     },
     "path": "day16/src/day16.kts",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "csharp",
+      "name": "C#"
+    },
+    "path": "day17/src/day17.cs"
   }
 ]
