@@ -118,5 +118,12 @@
     },
     "path": "day15/src/day15.cpp",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "kotlin",
+      "name": "Kotlin"
+    },
+    "path": "day16/src/day16.kts"
   }
 ]
