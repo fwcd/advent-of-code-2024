@@ -26,25 +26,32 @@ data class Board(val rows: List<String>) {
   operator fun get(pos: Vec2): Char = rows[pos.y][pos.x]
 
   fun shortestPath(start: Vec2, end: Vec2): Int {
-    val queue = PriorityQueue<Node>(11) { l, r -> r.total - l.total }
+    // Your run-of-the-mill Dijkstra implementation below
+
+    val queue = PriorityQueue<Node>(11) { l, r -> l.total - r.total }
     val visited = mutableSetOf<Pair<Vec2, Vec2>>()
 
-    val startDir: Vec2 = Vec2(0, -1)
+    val startDir: Vec2 = Vec2(1, 0)
     queue.add(Node(0, start, startDir))
     visited.add(Pair(start, startDir))
 
     while (!queue.isEmpty()) {
       val node = queue.poll()
-      println("${node.pos} and ${this[node.pos]}")
       if (node.pos == end) {
         return node.total
       }
       visited.add(Pair(node.pos, node.dir))
-      for (dir in listOf(node.dir, node.dir.rotateCW(), node.dir.rotateCCW())) {
-        val next = node.pos + dir
-        val weight = if (dir == node.dir) 1 else 1001
-        if (Pair(next, dir) !in visited && this[next] != '#') {
-          queue.add(Node(node.total + weight, next, dir))
+
+      // Step
+      val next = node.pos + node.dir
+      if (Pair(next, node.dir) !in visited && this[next] != '#') {
+        queue.add(Node(node.total + 1, next, node.dir))
+      }
+
+      // Rotate
+      for (dir in listOf(node.dir.rotateCW(), node.dir.rotateCCW())) {
+        if (Pair(node.pos, dir) !in visited) {
+          queue.add(Node(node.total + 1000, node.pos, dir))
         }
       }
     }
@@ -59,4 +66,4 @@ val board = Board(File(args[0]).readLines())
 val start = Vec2(1, board.height - 2)
 val end = Vec2(board.width - 2, 1)
 
-print("Part 1: ${board.shortestPath(start, end)}")
+println("Part 1: ${board.shortestPath(start, end)}")
