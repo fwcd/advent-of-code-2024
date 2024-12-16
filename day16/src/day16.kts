@@ -38,7 +38,7 @@ data class Board(val rows: List<String>) {
     visited.add(Pair(start, startDir))
 
     var shortestTotal: Int? = null
-    val shortestPaths = mutableSetOf<Vec2>()
+    val shortestPathVisited = mutableSetOf<Vec2>()
 
     while (!queue.isEmpty()) {
       val node = queue.poll()
@@ -47,7 +47,7 @@ data class Board(val rows: List<String>) {
       }
       if (node.pos == end) {
         shortestTotal = node.total
-        shortestPaths.addAll(node.visited)
+        shortestPathVisited.addAll(node.visited)
       }
       visited.add(Pair(node.pos, node.dir))
 
@@ -65,7 +65,7 @@ data class Board(val rows: List<String>) {
       }
     }
 
-    return shortestTotal?.let { ShortestPaths(it, shortestPaths) } ?: throw RuntimeException("No path found")
+    return shortestTotal?.let { ShortestPaths(it, shortestPathVisited) } ?: throw RuntimeException("No path found")
   }
 }
 
