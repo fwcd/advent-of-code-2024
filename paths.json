@@ -124,6 +124,7 @@
       "codemirror": "kotlin",
       "name": "Kotlin"
     },
-    "path": "day16/src/day16.kts"
+    "path": "day16/src/day16.kts",
+    "completed": true
   }
 ]
