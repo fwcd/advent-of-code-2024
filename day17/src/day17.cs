@@ -25,7 +25,7 @@ for (int i = 0; ; i++)
     Console.WriteLine($"  (searching {i}...)");
   }
   machine.Registers[0] = i;
-  List<int> output = machine.Copy().Run();
+  List<int> output = machine.Copy().RunOptimizedInputProgram();
   if (output.SequenceEqual(machine.Program))
   {
     Console.WriteLine($"Part 2: {i}");
@@ -92,6 +92,20 @@ public class Machine
         i += 2;
       }
     }
+    return outputs;
+  }
+
+  public List<int> RunOptimizedInputProgram()
+  {
+    var outputs = new List<int>();
+    do
+    {
+      Registers[1] = (Registers[0] & 0b111) ^ 0b001;
+      Registers[2] = Registers[0] >> Registers[1];
+      Registers[1] ^= Registers[2] ^ 0b101;
+      outputs.Add(Registers[1] & 0b111);
+      Registers[0] >>= 3;
+    } while (Registers[0] != 0);
     return outputs;
   }
 
