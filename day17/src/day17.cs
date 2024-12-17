@@ -19,12 +19,18 @@ Machine machine = new Machine(registers, program);
   Console.WriteLine($"Part 1: {string.Join(",", output)}");
 }
 
-for (int part2 = 0; ; part2++)
+int i = 0;
+int solved = 0;
+int solvedBitCount = 0;
+int solvedOutputValues = 0;
+
+while (true)
 {
-  if (part2 % 10_000_000 == 0) {
-    Console.WriteLine($"  (searching {part2}...)");
+  if (i % 10_000_000 == 0) {
+    Console.WriteLine($"  (searching {i}...)");
   }
 
+  int part2 = (i << solvedBitCount) | solved;
   machine.Registers[0] = part2;
   machine.Registers[1] = 0;
   machine.Registers[2] = 0;
@@ -34,6 +40,22 @@ for (int part2 = 0; ; part2++)
   {
     Console.WriteLine($"Part 2: {part2}");
     break;
+  }
+
+  int n = 9;
+  if (output.Skip(solvedOutputValues).Take(n).SequenceEqual(machine.Program.Skip(solvedOutputValues).Take(n)))
+  {
+    int newBitCount = 1;
+    int newBitMask = (1 << newBitCount) - 1;
+    solved |= (i & newBitMask) << solvedBitCount;
+    solvedBitCount += newBitCount;
+    solvedOutputValues++;
+    i = 0;
+    Console.WriteLine($"{Convert.ToString(part2, 2)} {solvedBitCount} ({Convert.ToString(solved, 2)}) " + string.Join(",", output));
+  }
+  else
+  {
+    i++;
   }
 }
 
