@@ -19,16 +19,20 @@ Machine machine = new Machine(registers, program);
   Console.WriteLine($"Part 1: {string.Join(",", output)}");
 }
 
-for (int i = 0; ; i++)
+for (int part2 = 0; ; part2++)
 {
-  if (i % 10_000_000 == 0) {
-    Console.WriteLine($"  (searching {i}...)");
+  if (part2 % 10_000_000 == 0) {
+    Console.WriteLine($"  (searching {part2}...)");
   }
-  machine.Registers[0] = i;
-  List<int> output = machine.Copy().RunOptimizedInputProgram();
+
+  machine.Registers[0] = part2;
+  machine.Registers[1] = 0;
+  machine.Registers[2] = 0;
+
+  List<int> output = machine.RunOptimizedInputProgram();
   if (output.SequenceEqual(machine.Program))
   {
-    Console.WriteLine($"Part 2: {i}");
+    Console.WriteLine($"Part 2: {part2}");
     break;
   }
 }
