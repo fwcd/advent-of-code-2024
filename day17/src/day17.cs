@@ -25,7 +25,7 @@ for (int i = 0; ; i++)
     Console.WriteLine($"  (searching {i}...)");
   }
   machine.Registers[0] = i;
-  List<int> output = machine.Copy().RunOptimizedInputProgram();
+  List<int> output = machine.Copy().Run();
   if (output.SequenceEqual(machine.Program))
   {
     Console.WriteLine($"Part 2: {i}");
@@ -59,13 +59,13 @@ public class Machine
       switch (opcode)
       {
         case 0: // adv (A divide)
-          Registers[0] /= 1 << combo;
+          Registers[0] >>= combo;
           break;
         case 1: // bxl (B xor literal)
           Registers[1] ^= operand;
           break;
         case 2: // bst (B store?)
-          Registers[1] = combo % 8;
+          Registers[1] = combo & 0b111;
           break;
         case 3: // jnz (jump not zero)
           if (Registers[0] != 0 && i != operand)
@@ -75,16 +75,16 @@ public class Machine
           }
           break;
         case 4: // bxc (B xor combo)
-          Registers[1] = Registers[1] ^ Registers[2];
+          Registers[1] ^= Registers[2];
           break;
         case 5: // out (output)
-          outputs.Add(combo % 8);
+          outputs.Add(combo & 0b111);
           break;
         case 6: // bdv (B divide)
-          Registers[1] = Registers[0] / (1 << combo);
+          Registers[1] = Registers[0] >> combo;
           break;
         case 7: // cdv (C divide)
-          Registers[2] = Registers[0] / (1 << combo);
+          Registers[2] = Registers[0] >> combo;
           break;
       }
       if (!jumped)
