@@ -12,12 +12,26 @@ if (args.Length == 0)
 string[] rawChunks = File.ReadAllText(args[0]).Trim().Split("\n\n");
 List<int> registers = rawChunks[0].Split("\n").Select(l => int.Parse(l.Split(": ")[1])).ToList();
 List<int> program = rawChunks[1].Split(" ")[1].Split(",").Select(int.Parse).ToList();
+Machine machine = new Machine(registers, program);
 
-var machine = new Machine { Registers = registers, Program = program };
-List<int> output = machine.Run();
+{
+  List<int> output = machine.Copy().Run();
+  Console.WriteLine($"Part 1: {string.Join(",", output)}");
+}
 
-Console.WriteLine($"{machine}");
-Console.WriteLine($"Part 1: {string.Join(",", output)}");
+for (int i = 0; ; i++)
+{
+  if (i % 10_000_000 == 0) {
+    Console.WriteLine($"  (searching {i}...)");
+  }
+  machine.Registers[0] = i;
+  List<int> output = machine.Copy().Run();
+  if (output.SequenceEqual(machine.Program))
+  {
+    Console.WriteLine($"Part 2: {i}");
+    break;
+  }
+}
 
 return 0;
 
@@ -25,6 +39,12 @@ public class Machine
 {
   public List<int> Registers;
   public List<int> Program;
+
+  public Machine(List<int> registers, List<int> program)
+  {
+    Registers = registers;
+    Program = program;
+  }
 
   public List<int> Run()
   {
@@ -35,7 +55,7 @@ public class Machine
       int operand = Program[i + 1];
       int combo = operand >= 4 && operand < 7 ? Registers[operand - 4] : operand;
       bool jumped = false;
-      Console.WriteLine($"{(new string[] {"adv", "bxl", "bst", "jnz", "bxc", "out", "bdv", "cdv"})[opcode]} {operand}: {string.Join("", Program.Take(i))}\x1B[4m{Program[i]}\x1B[0m{string.Join("", Program.Skip(i + 1))} - {string.Join(",", Registers)}");
+      // Console.WriteLine($"{(new string[] {"adv", "bxl", "bst", "jnz", "bxc", "out", "bdv", "cdv"})[opcode]} {operand}: {string.Join("", Program.Take(i))}\x1B[4m{Program[i]}\x1B[0m{string.Join("", Program.Skip(i + 1))} - {string.Join(",", Registers)}");
       switch (opcode)
       {
         case 0: // adv (A divide)
@@ -75,5 +95,7 @@ public class Machine
     return outputs;
   }
 
-  public override string ToString() => $"Program: {string.Join(",", Program)}, Registers: {string.Join(",", Registers)}";
+  public Machine Copy() => new Machine(Registers.ToList(), Program.ToList());
+
+  public override string ToString() => $"Registers: {string.Join(",", Registers)}, Program: {string.Join(",", Program)}";
 }
