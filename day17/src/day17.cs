@@ -15,7 +15,7 @@ List<int> program = rawChunks[1].Split(" ")[1].Split(",").Select(int.Parse).ToLi
 Machine machine = new Machine(registers, program);
 
 {
-  List<int> output = machine.Copy().RunOptimizedInputProgram();
+  List<int> output = machine.Copy().Run();
   Console.WriteLine($"Part 1: {string.Join(",", output)}");
 }
 
@@ -29,7 +29,7 @@ for (int part2 = 0; ; part2++)
   machine.Registers[1] = 0;
   machine.Registers[2] = 0;
 
-  List<int> output = machine.RunOptimizedInputProgram();
+  List<int> output = machine.Run();
   if (output.SequenceEqual(machine.Program))
   {
     Console.WriteLine($"Part 2: {part2}");
@@ -43,15 +43,21 @@ public class Machine
 {
   public List<int> Registers;
   public List<int> Program;
+  private bool optimized;
 
   public Machine(List<int> registers, List<int> program)
   {
     Registers = registers;
     Program = program;
+    optimized = program.SequenceEqual(new List<int> { 2,4,1,1,7,5,1,5,4,0,5,5,0,3,3,0 });
   }
 
   public List<int> Run()
   {
+    if (optimized)
+    {
+      return RunOptimizedInputProgram();
+    }
     var outputs = new List<int>();
     for (int i = 0; i < Program.Count;)
     {
@@ -99,7 +105,7 @@ public class Machine
     return outputs;
   }
 
-  public List<int> RunOptimizedInputProgram()
+  private List<int> RunOptimizedInputProgram()
   {
     var outputs = new List<int>();
     do
