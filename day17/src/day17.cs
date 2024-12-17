@@ -33,7 +33,7 @@ public class Machine
     {
       int opcode = Program[i];
       int operand = Program[i + 1];
-      int combo = operand > 3 && operand < 6 ? Registers[operand - 3] : operand;
+      int combo = operand >= 4 && operand < 7 ? Registers[operand - 4] : operand;
       bool jumped = false;
       Console.WriteLine($"{(new string[] {"adv", "bxl", "bst", "jnz", "bxc", "out", "bdv", "cdv"})[opcode]} {operand}: {string.Join("", Program.Take(i))}\x1B[4m{Program[i]}\x1B[0m{string.Join("", Program.Skip(i + 1))} - {string.Join(",", Registers)}");
       switch (opcode)
