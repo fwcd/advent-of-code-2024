@@ -61,10 +61,10 @@ public class Machine
         case 0: // adv (A divide)
           Registers[0] /= 1 << combo;
           break;
-        case 1: // bxl (bitwise xor literal)
+        case 1: // bxl (B xor literal)
           Registers[1] ^= operand;
           break;
-        case 2: // bst (bitwise store?)
+        case 2: // bst (B store?)
           Registers[1] = combo % 8;
           break;
         case 3: // jnz (jump not zero)
@@ -74,7 +74,7 @@ public class Machine
             jumped = true;
           }
           break;
-        case 4: // bxc (bitwise xor combo)
+        case 4: // bxc (B xor combo)
           Registers[1] = Registers[1] ^ Registers[2];
           break;
         case 5: // out (output)

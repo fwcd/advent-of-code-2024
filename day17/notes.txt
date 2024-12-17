@@ -1,0 +1,45 @@
+The program looks like this:
+
+  bst 4: 2411751540550330 - 64854237,0,0
+  bxl 1: 2411751540550330 - 64854237,5,0
+  cdv 5: 2411751540550330 - 64854237,4,0
+  bxl 5: 2411751540550330 - 64854237,4,4053389
+  bxc 0: 2411751540550330 - 64854237,1,4053389
+  out 5: 2411751540550330 - 64854237,4053388,4053389
+  adv 3: 2411751540550330 - 64854237,4053388,4053389
+  jnz 0: 2411751540550330 - 8106779,4053388,4053389
+  (repeat from top...)
+
+In pseudocode:
+
+  do {
+    B = A;
+    B ^= 1 (= 0b001);
+    C = A / (1 << B);
+    B ^= 5 (= 0b101);
+    B = B ^ C;
+    A /= (1 << 3);
+    output(B);
+  } while (A > 0);
+
+We can simplify this by eliminating the divisions:
+
+  do {
+    B = A;
+    B ^= 0b001;
+    C >>= B;
+    B ^= 0b101;
+    B = B ^ C;
+    A >>= 3;
+    output(B);
+  } while (A > 0);
+
+Folding constants:
+
+  do {
+    B = A ^ 0b001;
+    C >>= B;
+    B = B ^ 0b101 ^ C
+    A >>= 3;
+    output(B);
+  } while (A > 0);
