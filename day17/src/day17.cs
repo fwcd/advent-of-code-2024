@@ -15,7 +15,7 @@ List<int> program = rawChunks[1].Split(" ")[1].Split(",").Select(int.Parse).ToLi
 Machine machine = new Machine(registers, program);
 
 {
-  List<int> output = machine.Copy().Run();
+  List<int> output = machine.Copy().RunOptimizedInputProgram();
   Console.WriteLine($"Part 1: {string.Join(",", output)}");
 }
 
@@ -25,7 +25,7 @@ for (int i = 0; ; i++)
     Console.WriteLine($"  (searching {i}...)");
   }
   machine.Registers[0] = i;
-  List<int> output = machine.Copy().Run();
+  List<int> output = machine.Copy().RunOptimizedInputProgram();
   if (output.SequenceEqual(machine.Program))
   {
     Console.WriteLine($"Part 2: {i}");
