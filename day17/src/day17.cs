@@ -100,10 +100,8 @@ public class Machine
     var outputs = new List<int>();
     do
     {
-      Registers[1] = (Registers[0] & 0b111) ^ 0b001;
-      Registers[2] = Registers[0] >> Registers[1];
-      Registers[1] ^= Registers[2] ^ 0b101;
-      outputs.Add(Registers[1] & 0b111);
+      int l = Registers[0] & 0b111;
+      outputs.Add((l ^ 0b100 ^ (Registers[0] >> (l ^ 0b001))) & 0b111);
       Registers[0] >>= 3;
     } while (Registers[0] != 0);
     return outputs;

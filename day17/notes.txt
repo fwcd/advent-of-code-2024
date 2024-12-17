@@ -27,7 +27,24 @@ We can simplify this to:
   do {
     B = (A & 0b111) ^ 0b001;
     C = A >> B;
-    B ^= 0b101 ^ C
+    B ^= C ^ 0b101;
     output(B & 0b111);
+    A >>= 3;
+  } while (A > 0);
+
+Simplified even further:
+
+  do {
+    B = (A & 0b111) ^ 0b001;
+    B ^= (A >> B) ^ 0b101;
+    output(B & 0b111);
+    A >>= 3;
+  } while (A > 0);
+
+And even further, using a new constant `L` for better readability:
+
+  do {
+    L = A & 0b111;
+    output((L ^ 0b100 ^ (A >> (L ^ 0b001))) & 0b111);
     A >>= 3;
   } while (A > 0);
