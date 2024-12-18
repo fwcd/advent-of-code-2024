@@ -27,6 +27,7 @@
         -r:"$shared/System.Console.dll" \
         -r:"$shared/System.IO.dll" \
         -r:"$shared/System.Linq.dll" \
+        -r:"$shared/System.Text.RegularExpressions.dll" \
         day17.cs
     '';
 

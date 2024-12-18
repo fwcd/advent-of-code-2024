@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 if (args.Length == 0)
 {
@@ -188,7 +189,7 @@ public class Machine
     var smtTrailer = new List<string> { "(check-sat)", "(get-model)" };
     var smtProgram = smtDeclarations.Concat(smtAssertions).Concat(smtTrailer).ToList();
 
-    Console.WriteLine(string.Join("\n", smtProgram));
+    // Console.WriteLine(string.Join("\n", smtProgram));
 
     using (var process = new Process())
     {
@@ -213,10 +214,11 @@ public class Machine
 
       using (var z3Output = process.StandardOutput)
       {
-        string line;
-        while ((line = z3Output.ReadLine()) != null)
+        bool foundVar = false;
+        string output = z3Output.ReadToEnd().Replace("\n", " ");
+        foreach (var match in Regex.Matches(output, @$"\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+{bits}\)\s+#x([0-9a-f]+)\)"))
         {
-          Console.WriteLine(line);
+          Console.WriteLine(match);
         }
       }
       return 0;
