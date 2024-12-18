@@ -19,23 +19,25 @@ Machine machine = new Machine(registers, program);
   Console.WriteLine($"Part 1: {string.Join(",", output)}");
 }
 
-for (int part2 = 0; ; part2++)
-{
-  if (part2 % 10_000_000 == 0) {
-    Console.WriteLine($"  (searching {part2}...)");
-  }
+machine.SolveQuine();
 
-  machine.Registers[0] = part2;
-  machine.Registers[1] = 0;
-  machine.Registers[2] = 0;
+// for (int part2 = 0; ; part2++)
+// {
+//   if (part2 % 10_000_000 == 0) {
+//     Console.WriteLine($"  (searching {part2}...)");
+//   }
 
-  List<int> output = machine.Run();
-  if (output.SequenceEqual(machine.Program))
-  {
-    Console.WriteLine($"Part 2: {part2}");
-    break;
-  }
-}
+//   machine.Registers[0] = part2;
+//   machine.Registers[1] = 0;
+//   machine.Registers[2] = 0;
+
+//   List<int> output = machine.Run();
+//   if (output.SequenceEqual(machine.Program))
+//   {
+//     Console.WriteLine($"Part 2: {part2}");
+//     break;
+//   }
+// }
 
 return 0;
 
@@ -84,7 +86,7 @@ public class Machine
             jumped = true;
           }
           break;
-        case 4: // bxc (B xor combo)
+        case 4: // bxc (B xor C)
           Registers[1] ^= Registers[2];
           break;
         case 5: // out (output)
@@ -115,6 +117,80 @@ public class Machine
       Registers[0] >>= 3;
     } while (Registers[0] != 0);
     return outputs;
+  }
+
+  public List<int> SolveQuine()
+  {
+    // We use bitvector arithmetic as documented here: https://microsoft.github.io/z3guide/docs/theories/Bitvectors/
+
+    var registerVars = new List<string> { "a", "b", "c" };
+    var registerCounts = registerVars.Select(_ => 0).ToList();
+    var smtAssertions = new List<string>();
+    int bits = 64;
+    int outputs = 0;
+
+    string Int2Bv(int value) => $"((_ int2bv {bits}) {value})";
+    string Register(int i, int offset = 0) => $"{registerVars[i]}{registerCounts[i] + offset}";
+
+    for (int i = 0; i < Program.Count;)
+    {
+      int opcode = Program[i];
+      int operand = Program[i + 1];
+      string literal = Int2Bv(operand);
+      string combo = operand >= 4 && operand < 7 ? Register(operand - 4) : literal;
+      bool jumped = false;
+      switch (opcode)
+      {
+        case 0: // adv (A divide)
+          smtAssertions.Add($"(assert (= {Register(0, 1)} (bvlshr {Register(0)} {combo})))");
+          registerCounts[0]++;
+          break;
+        case 1: // bxl (B xor literal)
+          smtAssertions.Add($"(assert (= {Register(1, 1)} (bvxor {Register(1)} {literal})))");
+          registerCounts[1]++;
+          break;
+        case 2: // bst (B store?)
+          smtAssertions.Add($"(assert (= {Register(1, 1)} (bvand {combo} {Int2Bv(0b111)})))");
+          registerCounts[1]++;
+          break;
+        case 3: // jnz (jump not zero)
+          if (outputs < Program.Count && i != operand)
+          {
+            i = operand;
+            jumped = true;
+          }
+          break;
+        case 4: // bxc (B xor C)
+          smtAssertions.Add($"(assert (= {Register(1, 1)} (bvxor {Register(1)} {Register(2)})))");
+          registerCounts[1]++;
+          break;
+        case 5: // out (output)
+          smtAssertions.Add($"(assert (= (bvand {combo} {Int2Bv(0b111)}) {Int2Bv(Program[outputs])}))");
+          outputs++;
+          break;
+        case 6: // bdv (B divide)
+          smtAssertions.Add($"(assert (= {Register(1, 1)} (bvlshr {Register(0)} {combo})))");
+          registerCounts[1]++;
+          break;
+        case 7: // cdv (C divide)
+          smtAssertions.Add($"(assert (= {Register(2, 1)} (bvlshr {Register(0)} {combo})))");
+          registerCounts[2]++;
+          break;
+      }
+      if (!jumped)
+      {
+        i += 2;
+      }
+    }
+
+    var smtDeclarations = registerCounts.Zip(registerVars).SelectMany(p => Enumerable.Range(0, p.First + 1).Select(i => $"(declare-const {p.Second}{i} (_ BitVec {bits}))")).ToList();
+    var smtTrailer = new List<string> { "(check-sat)", "(get-model)" };
+    var smtProgram = string.Join("\n", smtDeclarations.Concat(smtAssertions).Concat(smtTrailer));
+
+    Console.WriteLine(smtProgram);
+
+    // TODO
+    return new List<int>();
   }
 
   public Machine Copy() => new Machine(Registers.ToList(), Program.ToList());
