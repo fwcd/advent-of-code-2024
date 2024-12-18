@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.IO;
 
@@ -119,7 +120,7 @@ public class Machine
     return outputs;
   }
 
-  public List<int> SolveQuine()
+  public int SolveQuine()
   {
     // We use bitvector arithmetic as documented here: https://microsoft.github.io/z3guide/docs/theories/Bitvectors/
 
@@ -185,12 +186,41 @@ public class Machine
 
     var smtDeclarations = registerCounts.Zip(registerVars).SelectMany(p => Enumerable.Range(0, p.First + 1).Select(i => $"(declare-const {p.Second}{i} (_ BitVec {bits}))")).ToList();
     var smtTrailer = new List<string> { "(check-sat)", "(get-model)" };
-    var smtProgram = string.Join("\n", smtDeclarations.Concat(smtAssertions).Concat(smtTrailer));
+    var smtProgram = smtDeclarations.Concat(smtAssertions).Concat(smtTrailer).ToList();
 
-    Console.WriteLine(smtProgram);
+    Console.WriteLine(string.Join("\n", smtProgram));
 
-    // TODO
-    return new List<int>();
+    using (var process = new Process())
+    {
+      var startInfo = new ProcessStartInfo();
+      startInfo.FileName = "z3";
+      startInfo.Arguments = "-smt2 -in";
+      startInfo.RedirectStandardInput = true;
+      startInfo.RedirectStandardOutput = true;
+
+      process.StartInfo = startInfo;
+      process.Start();
+
+      using (var z3Input = process.StandardInput)
+      {
+        foreach (string line in smtProgram)
+        {
+          z3Input.WriteLine(line);
+        }
+      }
+
+      process.WaitForExit();
+
+      using (var z3Output = process.StandardOutput)
+      {
+        string line;
+        while ((line = z3Output.ReadLine()) != null)
+        {
+          Console.WriteLine(line);
+        }
+      }
+      return 0;
+    }
   }
 
   public Machine Copy() => new Machine(Registers.ToList(), Program.ToList());
