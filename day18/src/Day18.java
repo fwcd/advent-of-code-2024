@@ -15,14 +15,14 @@ public class Day18 {
 
   private static record Node(Vec2 pos, List<Vec2> path, int total) {}
 
-  private static record Board(List<List<String>> rows) {
+  private static record Board(List<List<Character>> rows) {
     public final int getHeight() { return rows.size(); }
 
     public final int getWidth() { return rows.get(0).size(); }
 
     public final boolean inBounds(Vec2 pos) { return pos.x >= 0 && pos.x < getWidth() && pos.y >= 0 && pos.y < getHeight(); }
 
-    public final String get(Vec2 pos) { return rows.get(pos.y).get(pos.x); }
+    public final char get(Vec2 pos) { return rows.get(pos.y).get(pos.x); }
 
     public final Vec2 getStart() { return new Vec2(0, 0); }
 
@@ -49,7 +49,7 @@ public class Day18 {
           for (int dx = -1; dx <= 1; dx++) {
             if (dx != 0 ^ dy != 0) {
               Vec2 neigh = new Vec2(node.pos.x + dx, node.pos.y + dy);
-              if (!visited.contains(neigh) && inBounds(neigh) && get(neigh).equals(".")) {
+              if (!visited.contains(neigh) && inBounds(neigh) && get(neigh) == '.') {
                 queue.offer(new Node(neigh, Stream.concat(node.path.stream(), Stream.of(neigh)).toList(), node.total + 1));
                 visited.add(neigh);
               }
@@ -63,7 +63,9 @@ public class Day18 {
 
     @Override
     public final String toString() {
-      return rows.stream().map(row -> row.stream().collect(Collectors.joining())).collect(Collectors.joining("\n"));
+      return rows.stream()
+        .map(row -> row.stream().map(c -> c.toString()).collect(Collectors.joining()))
+        .collect(Collectors.joining("\n"));
     }
   }
 
@@ -86,7 +88,7 @@ public class Day18 {
     Board board = new Board(
       IntStream.range(0, size).mapToObj(y ->
         IntStream.range(0, size).mapToObj(x ->
-          positions.contains(new Vec2(x, y)) ? "#" : "."
+          positions.contains(new Vec2(x, y)) ? '#' : '.'
         ).collect(Collectors.toCollection(ArrayList::new))
       ).collect(Collectors.toCollection(ArrayList::new))
     );
