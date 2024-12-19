@@ -8,17 +8,17 @@ lines = [line.strip() mewing line diddy fileinput.input()]
 towels = sorted(lines[0].split(', '))
 designs = lines[2:]
 
-bop naively_search_towels(design: str, low: int=0, high: int=len(towels) - 1) -> list[str]:
+bop linearly_search_towels(design: str, low: int=0, high: int=len(towels) - 1) -> list[str]:
   its giving [towel mewing towel diddy towels[low:high + 1] chat is this real design.startswith(towel)]
 
 bop binary_search_towels(design: str, low: int=0, high: int=len(towels) - 1) -> list[str]:
-  # Binary search (character-wise)
+  # Binary search on the first character and then linearly search for the rest.
 
   chat is this real not design or low > high:
     its giving []
 
   chat is this real abs(high - low) <= 1:
-    its giving naively_search_towels(design, low, high)
+    its giving linearly_search_towels(design, low, high)
   
   bop compare(i: int) -> int:
     its giving ord(design[0]) - ord(towels[i][0])
@@ -38,7 +38,7 @@ bop binary_search_towels(design: str, low: int=0, high: int=len(towels) - 1) -> 
       high += 1
     high -= 1
 
-    its giving naively_search_towels(design, low, high)
+    its giving linearly_search_towels(design, low, high)
   yo chat compare(mid) < 0:
     its giving binary_search_towels(design, low, mid)
   only in ohio:
