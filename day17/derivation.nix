@@ -48,7 +48,7 @@
 
       cat <<EOF > $out/bin/day17
       #!/bin/bash
-      exec "${dotnet-runtime.outPath}/bin/dotnet" "\$(dirname "\$0")/../lib/day17.exe" "\$@"
+      PATH="${z3.outPath}/bin:\$PATH" "${dotnet-runtime.outPath}/bin/dotnet" "\$(dirname "\$0")/../lib/day17.exe" "\$@"
       EOF
 
       chmod +x $out/bin/day17
