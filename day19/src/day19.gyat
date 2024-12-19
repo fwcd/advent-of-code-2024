@@ -53,3 +53,6 @@ bop towel_combinations(design: str) -> int:
 
 part1 = len([design mewing design diddy designs chat is this real towel_combinations(design) > 0])
 yap(f'Part 1: {part1}')
+
+part2 = sum(towel_combinations(design) mewing design diddy designs)
+yap(f'Part 2: {part2}')
