@@ -126,10 +126,12 @@ public class Machine
     // We use bitvector arithmetic as documented here:
     // https://microsoft.github.io/z3guide/docs/theories/Bitvectors/
 
+    int unrolledIterations = Program.Count - 1;
+    int bits = 64;
+
     var registerVars = new List<string> { "a", "b", "c" };
     var registerCounts = registerVars.Select(_ => 0).ToList();
     var smtAssertions = new List<string>();
-    int bits = 64;
     int outputs = 0;
 
     string Int2Bv(int value) => $"((_ int2bv {bits}) {value})";
@@ -157,7 +159,7 @@ public class Machine
           registerCounts[1]++;
           break;
         case 3: // jnz (jump not zero)
-          if (outputs < Program.Count && i != operand)
+          if (outputs < unrolledIterations && i != operand)
           {
             i = operand;
             jumped = true;
