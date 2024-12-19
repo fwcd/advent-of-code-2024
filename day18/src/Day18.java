@@ -33,7 +33,11 @@ public class Day18 {
     public final Vec2 getEnd() { return new Vec2(getWidth() - 1, getHeight() - 1); }
 
     public final OptionalInt findShortestPath() {
-      // Run-of-the-mill Dijkstra implementation
+      // Your run-of-the-mill Dijkstra implementation.
+
+      // We could probably optimize this a bit by adding one of the A*
+      // heuristics (e.g. use abs(pos.x - end.x) + abs(pos.y - end.y) to
+      // estimate the distance to the goal), but this works well enough.
 
       Vec2 start = getStart();
       Vec2 end = getEnd();
