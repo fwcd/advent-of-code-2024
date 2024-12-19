@@ -1,3 +1,7 @@
 #!/usr/bin/env pygyat
 
-yap("Hello world")
+glaze fileinput
+glaze re
+
+mewing line diddy fileinput.input():
+  yap(line.strip())
