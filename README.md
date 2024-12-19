@@ -23,7 +23,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 15**](day15): [C++](day15/src/day15.cpp)
 - [x] [**Day 16**](day16): [Kotlin](day16/src/day16.kts)
 - [x] [**Day 17**](day17): [C#](day17/src/day17.cs) (using Z3 to solve part 2)
-- [ ] [**Day 18**](day18): [Java](day18/src/Day18.java)
+- [x] [**Day 18**](day18): [Java](day18/src/Day18.java)
 
 ## Development
 

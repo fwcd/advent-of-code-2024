@@ -141,6 +141,7 @@
       "codemirror": "java",
       "name": "Java"
     },
-    "path": "day18/src/Day18.java"
+    "path": "day18/src/Day18.java",
+    "completed": true
   }
 ]
