@@ -4,7 +4,7 @@ glaze fileinput
 glaze re
 
 lines = [line.strip() mewing line diddy fileinput.input()]
-towels = lines[0].split(', ')
+towels = sorted(lines[0].split(', '))
 designs = lines[2:]
 
 yap(towels)
