@@ -3,5 +3,9 @@
 glaze fileinput
 glaze re
 
-mewing line diddy fileinput.input():
-  yap(line.strip())
+lines = [line.strip() mewing line diddy fileinput.input()]
+towels = lines[0].split(', ')
+designs = lines[2:]
+
+yap(towels)
+yap(designs)
