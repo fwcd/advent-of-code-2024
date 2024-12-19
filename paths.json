@@ -132,6 +132,7 @@
       "codemirror": "csharp",
       "name": "C#"
     },
-    "path": "day17/src/day17.cs"
+    "path": "day17/src/day17.cs",
+    "completed": true
   }
 ]

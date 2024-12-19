@@ -22,7 +22,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 14**](day14): [Haskell](day14/src/Day14.hs)
 - [x] [**Day 15**](day15): [C++](day15/src/day15.cpp)
 - [x] [**Day 16**](day16): [Kotlin](day16/src/day16.kts)
-- [ ] [**Day 17**](day17): [C#](day17/src/day17.cs)
+- [x] [**Day 17**](day17): [C#](day17/src/day17.cs)
 
 ## Development
 
