@@ -1,0 +1,3 @@
+#!/usr/bin/env pygyat
+
+yap("Hello world")

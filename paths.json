@@ -143,5 +143,12 @@
     },
     "path": "day18/src/Day18.java",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "python",
+      "name": "PyGyat"
+    },
+    "path": "day19/src/day19.gyat"
   }
 ]
