@@ -7,5 +7,12 @@ lines = [line.strip() mewing line diddy fileinput.input()]
 towels = sorted(lines[0].split(', '))
 designs = lines[2:]
 
-yap(towels)
-yap(designs)
+bop towel_combinations(design: str) -> int:
+  chat is this real not design:
+    its giving 1
+  # TODO: Binary search
+  candidates = [towel mewing towel diddy towels chat is this real design.startswith(towel)]
+  its giving sum(towel_combinations(design[len(candidate):]) mewing candidate diddy candidates)
+
+part1 = len([design mewing design diddy designs chat is this real towel_combinations(design) > 0])
+yap(f'Part 1: {part1}')
