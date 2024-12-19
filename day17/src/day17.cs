@@ -12,12 +12,12 @@ if (args.Length == 0)
 }
 
 string[] rawChunks = File.ReadAllText(args[0]).Trim().Split("\n\n");
-List<int> registers = rawChunks[0].Split("\n").Select(l => int.Parse(l.Split(": ")[1])).ToList();
+List<long> registers = rawChunks[0].Split("\n").Select(l => long.Parse(l.Split(": ")[1])).ToList();
 List<int> program = rawChunks[1].Split(" ")[1].Split(",").Select(int.Parse).ToList();
 Machine machine = new Machine(registers, program);
 
 {
-  List<int> output = machine.Copy().Run();
+  List<long> output = machine.Copy().Run();
   Console.WriteLine($"Part 1: {string.Join(",", output)}");
 }
 
@@ -33,35 +33,35 @@ return 0;
 
 public class Machine
 {
-  public List<int> Registers;
+  public List<long> Registers;
   public List<int> Program;
   private bool optimized;
 
-  public Machine(List<int> registers, List<int> program)
+  public Machine(List<long> registers, List<int> program)
   {
     Registers = registers;
     Program = program;
     optimized = program.SequenceEqual(new List<int> { 2,4,1,1,7,5,1,5,4,0,5,5,0,3,3,0 });
   }
 
-  public List<int> Run()
+  public List<long> Run()
   {
     if (optimized)
     {
       return RunOptimizedInputProgram();
     }
-    var outputs = new List<int>();
+    var outputs = new List<long>();
     for (int i = 0; i < Program.Count;)
     {
       int opcode = Program[i];
       int operand = Program[i + 1];
-      int combo = operand >= 4 && operand < 7 ? Registers[operand - 4] : operand;
+      long combo = operand >= 4 && operand < 7 ? Registers[operand - 4] : operand;
       bool jumped = false;
       // Console.WriteLine($"{(new string[] {"adv", "bxl", "bst", "jnz", "bxc", "out", "bdv", "cdv"})[opcode]} {operand}: {string.Join("", Program.Take(i))}\x1B[4m{Program[i]}\x1B[0m{string.Join("", Program.Skip(i + 1))} - {string.Join(",", Registers)}");
       switch (opcode)
       {
         case 0: // adv (A divide)
-          Registers[0] >>= combo;
+          Registers[0] >>= (int) combo;
           break;
         case 1: // bxl (B xor literal)
           Registers[1] ^= operand;
@@ -83,10 +83,10 @@ public class Machine
           outputs.Add(combo & 0b111);
           break;
         case 6: // bdv (B divide)
-          Registers[1] = Registers[0] >> combo;
+          Registers[1] = Registers[0] >> (int) combo;
           break;
         case 7: // cdv (C divide)
-          Registers[2] = Registers[0] >> combo;
+          Registers[2] = Registers[0] >> (int) combo;
           break;
       }
       if (!jumped)
@@ -97,13 +97,13 @@ public class Machine
     return outputs;
   }
 
-  private List<int> RunOptimizedInputProgram()
+  private List<long> RunOptimizedInputProgram()
   {
-    var outputs = new List<int>();
+    var outputs = new List<long>();
     do
     {
-      int l = Registers[0] & 0b111;
-      outputs.Add((l ^ 0b100 ^ (Registers[0] >> (l ^ 0b001))) & 0b111);
+      long l = Registers[0] & 0b111;
+      outputs.Add((l ^ 0b100 ^ (Registers[0] >> (int) (l ^ 0b001))) & 0b111);
       Registers[0] >>= 3;
     } while (Registers[0] != 0);
     return outputs;
