@@ -22,10 +22,17 @@ Machine machine = new Machine(registers, program);
 }
 
 {
-  long part2 = machine.SolveQuine();
-  Console.WriteLine($"Part 2: {part2}");
+  long? solution = null;
+  long minSolution = -1;
+  
+  while ((solution = machine.SolveQuine(solution)) != null) {
+    Console.WriteLine($"Found solution: {solution.Value}");
+    minSolution = solution.Value;
+  }
 
-  machine.Registers[0] = part2;
+  Console.WriteLine($"Part 2: {minSolution}");
+
+  machine.Registers[0] = minSolution;
   List<long> output = machine.Run();
   Console.WriteLine($"(outputs {string.Join(",", output)})");
 }
@@ -113,7 +120,7 @@ public class Machine
     return outputs;
   }
 
-  public long SolveQuine()
+  public long? SolveQuine(long? upperBound = null)
   {
     // For part 2 we use an approach inspired by a Reddit post by deferring the
     // heavy-lifting to the Z3 SMT solver:
@@ -135,14 +142,14 @@ public class Machine
     int outputs = 0;
     int iterations = 0;
 
-    string Int2Bv(int value) => $"((_ int2bv {bits}) {value})";
+    string Long2Bv(long value) => $"((_ int2bv {bits}) {value})";
     string Register(int i, int offset = 0) => $"{registerVars[i]}{registerCounts[i] + offset}";
 
     for (int i = 0; i < Program.Count;)
     {
       int opcode = Program[i];
       int operand = Program[i + 1];
-      string literal = Int2Bv(operand);
+      string literal = Long2Bv(operand);
       string combo = operand >= 4 && operand < 7 ? Register(operand - 4) : literal;
       bool jumped = false;
       switch (opcode)
@@ -156,7 +163,7 @@ public class Machine
           registerCounts[1]++;
           break;
         case 2: // bst (B store?)
-          smtAssertions.Add($"(assert (= {Register(1, 1)} (bvand {combo} {Int2Bv(0b111)})))");
+          smtAssertions.Add($"(assert (= {Register(1, 1)} (bvand {combo} {Long2Bv(0b111)})))");
           registerCounts[1]++;
           break;
         case 3: // jnz (jump not zero)
@@ -169,7 +176,7 @@ public class Machine
           else
           {
             // After the unrolled iterations we want the jump to fail so the loop exits
-            smtAssertions.Add($"(assert (= {Int2Bv(0)} {Register(0)}))");
+            smtAssertions.Add($"(assert (= {Long2Bv(0)} {Register(0)}))");
           }
           break;
         case 4: // bxc (B xor C)
@@ -177,7 +184,7 @@ public class Machine
           registerCounts[1]++;
           break;
         case 5: // out (output)
-          smtAssertions.Add($"(assert (= (bvand {combo} {Int2Bv(0b111)}) {Int2Bv(Program[outputs])}))");
+          smtAssertions.Add($"(assert (= (bvand {combo} {Long2Bv(0b111)}) {Long2Bv(Program[outputs])}))");
           outputs++;
           break;
         case 6: // bdv (B divide)
@@ -195,12 +202,17 @@ public class Machine
       }
     }
 
+    if (upperBound != null)
+    {
+      smtAssertions.Add($"(assert (bvult a0 {Long2Bv(upperBound.Value)}))");
+    }
+
     var smtDeclarations = registerCounts.Zip(registerVars).SelectMany(p => Enumerable.Range(0, p.First + 1).Select(i => $"(declare-const {p.Second}{i} (_ BitVec {bits}))")).ToList();
     var smtTrailer = new List<string> { "(check-sat)", "(get-model)" };
     var smtProgram = smtDeclarations.Concat(smtAssertions).Concat(smtTrailer).ToList();
 
     // Uncomment to debug-log the generated SMT-LIB program
-    Console.WriteLine(string.Join("\n", smtProgram));
+    // Console.WriteLine(string.Join("\n", smtProgram));
 
     using (var process = new Process())
     {
@@ -237,7 +249,7 @@ public class Machine
           }
         }
       }
-      throw new Exception("No result found");
+      return null;
     }
   }
 
