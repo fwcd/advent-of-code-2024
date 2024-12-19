@@ -58,7 +58,10 @@ public class Machine
       int operand = Program[i + 1];
       long combo = operand >= 4 && operand < 7 ? Registers[operand - 4] : operand;
       bool jumped = false;
+
+      // Uncomment to debug-log the executed instructions
       // Console.WriteLine($"{(new string[] {"adv", "bxl", "bst", "jnz", "bxc", "out", "bdv", "cdv"})[opcode]} {operand}: {string.Join("", Program.Take(i))}\x1B[4m{Program[i]}\x1B[0m{string.Join("", Program.Skip(i + 1))} - {string.Join(",", Registers)}");
+
       switch (opcode)
       {
         case 0: // adv (A divide)
@@ -178,6 +181,7 @@ public class Machine
     var smtTrailer = new List<string> { "(check-sat)", "(get-model)" };
     var smtProgram = smtDeclarations.Concat(smtAssertions).Concat(smtTrailer).ToList();
 
+    // Uncomment to debug-log the generated SMT-LIB program
     // Console.WriteLine(string.Join("\n", smtProgram));
 
     using (var process = new Process())
@@ -206,6 +210,9 @@ public class Machine
         string output = z3Output.ReadToEnd().Replace("\n", " ");
         foreach (Match match in Regex.Matches(output, @$"\(define-fun\s+(?<name>\w+)\s+\(\)\s+\(_\s+BitVec\s+{bits}\)\s+#x(?<hex>[0-9a-f]+)\)"))
         {
+          // Uncomment to debug-log the Z3-solved variables
+          // Console.WriteLine(match);
+
           if (match.Groups["name"].Value == "a0")
           {
             return Convert.ToInt64(match.Groups["hex"].Value, 16);
