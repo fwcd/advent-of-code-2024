@@ -133,6 +133,7 @@
       "name": "C#"
     },
     "path": "day17/src/day17.cs",
-    "completed": true
+    "completed": true,
+    "additionalNotes": "(using Z3 to solve part 2)"
   }
 ]
