@@ -8,18 +8,21 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Day18 {
   private static record Vec2(int x, int y) {}
 
-  private static record Node(Vec2 pos, int total) {}
+  private static record Node(Vec2 pos, List<Vec2> path, int total) {}
 
-  private static record Board(List<List<Boolean>> corrupted) {
-    public final int getHeight() { return corrupted.size(); }
+  private static record Board(List<List<String>> rows) {
+    public final int getHeight() { return rows.size(); }
 
-    public final int getWidth() { return corrupted.get(0).size(); }
+    public final int getWidth() { return rows.get(0).size(); }
 
     public final boolean inBounds(Vec2 pos) { return pos.x >= 0 && pos.x < getWidth() && pos.y >= 0 && pos.y < getHeight(); }
+
+    public final String get(Vec2 pos) { return rows.get(pos.y).get(pos.x); }
 
     public final Vec2 getStart() { return new Vec2(0, 0); }
 
@@ -30,8 +33,12 @@ public class Day18 {
 
       Vec2 start = getStart();
       Vec2 end = getEnd();
+
+      Set<Vec2> visited = new HashSet<>();
       PriorityQueue<Node> queue = new PriorityQueue<>((l, r) -> l.total - r.total);
-      queue.offer(new Node(start, 0));
+
+      queue.offer(new Node(start, List.of(), 0));
+      visited.add(start);
 
       while (!queue.isEmpty()) {
         Node node = queue.poll();
@@ -40,10 +47,11 @@ public class Day18 {
         }
         for (int dy = -1; dy <= 1; dy++) {
           for (int dx = -1; dx <= 1; dx++) {
-            if (dx == 0 ^ dy == 0) {
+            if (dx != 0 ^ dy != 0) {
               Vec2 neigh = new Vec2(node.pos.x + dx, node.pos.y + dy);
-              if (inBounds(neigh)) {
-                queue.offer(new Node(neigh, node.total + 1));
+              if (!visited.contains(neigh) && inBounds(neigh) && get(neigh).equals(".")) {
+                queue.offer(new Node(neigh, Stream.concat(node.path.stream(), Stream.of(neigh)).toList(), node.total + 1));
+                visited.add(neigh);
               }
             }
           }
@@ -55,9 +63,7 @@ public class Day18 {
 
     @Override
     public final String toString() {
-      return corrupted.stream()
-        .map(row -> row.stream().map(b -> b ? "#" : ".").collect(Collectors.joining()))
-        .collect(Collectors.joining("\n"));
+      return rows.stream().map(row -> row.stream().collect(Collectors.joining())).collect(Collectors.joining("\n"));
     }
   }
 
@@ -67,8 +73,8 @@ public class Day18 {
       System.exit(1);
     }
 
-    int prefix = 12;
-    int size = 6;
+    int prefix = 1024;
+    int size = 71;
 
     Set<Vec2> positions = Files.readAllLines(Paths.get(args[0]))
       .stream()
@@ -80,12 +86,11 @@ public class Day18 {
     Board board = new Board(
       IntStream.range(0, size).mapToObj(y ->
         IntStream.range(0, size).mapToObj(x ->
-          positions.contains(new Vec2(x, y))
+          positions.contains(new Vec2(x, y)) ? "#" : "."
         ).collect(Collectors.toCollection(ArrayList::new))
       ).collect(Collectors.toCollection(ArrayList::new))
     );
 
-    System.out.println(board);
     System.out.println("Part 1: " + board.findShortestPath());
   }
 }
