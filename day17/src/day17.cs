@@ -133,6 +133,7 @@ public class Machine
     var registerCounts = registerVars.Select(_ => 0).ToList();
     var smtAssertions = new List<string>();
     int outputs = 0;
+    int iterations = 0;
 
     string Int2Bv(int value) => $"((_ int2bv {bits}) {value})";
     string Register(int i, int offset = 0) => $"{registerVars[i]}{registerCounts[i] + offset}";
@@ -159,10 +160,16 @@ public class Machine
           registerCounts[1]++;
           break;
         case 3: // jnz (jump not zero)
-          if (outputs < unrolledIterations && i != operand)
+          if (iterations < unrolledIterations && i != operand)
           {
             i = operand;
             jumped = true;
+            iterations++;
+          }
+          else
+          {
+            // After the unrolled iterations we want the jump to fail so the loop exits
+            smtAssertions.Add($"(assert (= {Int2Bv(0)} {Register(0)}))");
           }
           break;
         case 4: // bxc (B xor C)
@@ -193,7 +200,7 @@ public class Machine
     var smtProgram = smtDeclarations.Concat(smtAssertions).Concat(smtTrailer).ToList();
 
     // Uncomment to debug-log the generated SMT-LIB program
-    // Console.WriteLine(string.Join("\n", smtProgram));
+    Console.WriteLine(string.Join("\n", smtProgram));
 
     using (var process = new Process())
     {
