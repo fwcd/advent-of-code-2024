@@ -135,5 +135,12 @@
     "path": "day17/src/day17.cs",
     "completed": true,
     "additionalNotes": "(using Z3 to solve part 2)"
+  },
+  {
+    "lang": {
+      "codemirror": "java",
+      "name": "Java"
+    },
+    "path": "day18/src/Day18.java"
   }
 ]
