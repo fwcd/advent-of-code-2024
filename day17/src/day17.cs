@@ -21,25 +21,13 @@ Machine machine = new Machine(registers, program);
   Console.WriteLine($"Part 1: {string.Join(",", output)}");
 }
 
-machine.SolveQuine();
+{
+  long part2 = machine.SolveQuine();
+  Console.WriteLine($"Part 2: {part2}");
 
-// for (int part2 = 0; ; part2++)
-// {
-//   if (part2 % 10_000_000 == 0) {
-//     Console.WriteLine($"  (searching {part2}...)");
-//   }
-
-//   machine.Registers[0] = part2;
-//   machine.Registers[1] = 0;
-//   machine.Registers[2] = 0;
-
-//   List<int> output = machine.Run();
-//   if (output.SequenceEqual(machine.Program))
-//   {
-//     Console.WriteLine($"Part 2: {part2}");
-//     break;
-//   }
-// }
+  // machine.Registers[0] = part2;
+  // Console.WriteLine(string.Join(",", machine.Run()));
+}
 
 return 0;
 
@@ -121,7 +109,7 @@ public class Machine
     return outputs;
   }
 
-  public int SolveQuine()
+  public long SolveQuine()
   {
     // We use bitvector arithmetic as documented here: https://microsoft.github.io/z3guide/docs/theories/Bitvectors/
 
@@ -214,14 +202,16 @@ public class Machine
 
       using (var z3Output = process.StandardOutput)
       {
-        bool foundVar = false;
         string output = z3Output.ReadToEnd().Replace("\n", " ");
-        foreach (var match in Regex.Matches(output, @$"\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+{bits}\)\s+#x([0-9a-f]+)\)"))
+        foreach (Match match in Regex.Matches(output, @$"\(define-fun\s+(?<name>\w+)\s+\(\)\s+\(_\s+BitVec\s+{bits}\)\s+#x(?<hex>[0-9a-f]+)\)"))
         {
-          Console.WriteLine(match);
+          if (match.Groups["name"].Value == "a0")
+          {
+            return Convert.ToInt64(match.Groups["hex"].Value, 16);
+          }
         }
       }
-      return 0;
+      throw new Exception("No result found");
     }
   }
 
