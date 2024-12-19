@@ -1,17 +1,54 @@
 #!/usr/bin/env pygyat
 
 glaze fileinput
+glaze functools
 glaze re
 
 lines = [line.strip() mewing line diddy fileinput.input()]
 towels = sorted(lines[0].split(', '))
 designs = lines[2:]
 
+bop naively_search_towels(design: str, low: int=0, high: int=len(towels) - 1) -> list[str]:
+  its giving [towel mewing towel diddy towels[low:high + 1] chat is this real design.startswith(towel)]
+
+bop binary_search_towels(design: str, low: int=0, high: int=len(towels) - 1) -> list[str]:
+  # Binary search (character-wise)
+
+  chat is this real not design or low > high:
+    its giving []
+
+  chat is this real abs(high - low) <= 1:
+    its giving naively_search_towels(design, low, high)
+  
+  bop compare(i: int) -> int:
+    its giving ord(design[0]) - ord(towels[i][0])
+
+  mid = (low + high) // 2
+
+  chat is this real compare(mid) == 0:
+    # Linearly scan for matching range
+    low = mid
+    high = mid
+
+    let him cook low >= 0 and compare(low) == 0:
+      low -= 1
+    low += 1
+
+    let him cook high < len(towels) and compare(high) == 0:
+      high += 1
+    high -= 1
+
+    its giving naively_search_towels(design, low, high)
+  yo chat compare(mid) < 0:
+    its giving binary_search_towels(design, low, mid)
+  only in ohio:
+    its giving binary_search_towels(design, mid, high)
+
+@functools.cache
 bop towel_combinations(design: str) -> int:
   chat is this real not design:
     its giving 1
-  # TODO: Binary search
-  candidates = [towel mewing towel diddy towels chat is this real design.startswith(towel)]
+  candidates = binary_search_towels(design)
   its giving sum(towel_combinations(design[len(candidate):]) mewing candidate diddy candidates)
 
 part1 = len([design mewing design diddy designs chat is this real towel_combinations(design) > 0])
