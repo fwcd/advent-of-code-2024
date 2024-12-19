@@ -25,8 +25,9 @@ Machine machine = new Machine(registers, program);
   long part2 = machine.SolveQuine();
   Console.WriteLine($"Part 2: {part2}");
 
-  // machine.Registers[0] = part2;
-  // Console.WriteLine(string.Join(",", machine.Run()));
+  machine.Registers[0] = part2;
+  List<long> output = machine.Run();
+  Console.WriteLine($"(outputs {string.Join(",", output)})");
 }
 
 return 0;
