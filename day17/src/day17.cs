@@ -115,7 +115,16 @@ public class Machine
 
   public long SolveQuine()
   {
-    // We use bitvector arithmetic as documented here: https://microsoft.github.io/z3guide/docs/theories/Bitvectors/
+    // For part 2 we use an approach inspired by a Reddit post by deferring the
+    // heavy-lifting to the Z3 SMT solver:
+    // https://www.reddit.com/r/adventofcode/comments/1hgk9nt/2024_day_17_part_2_this_feels_like_cheating/
+    //
+    // The approach is to encode the instructions as assertions/equations in an
+    // SSA-like form (creating a new variable for every assignment), unroll the
+    // loop/jump for enough iterations and then simply solve for a0.
+    //
+    // We use bitvector arithmetic as documented here:
+    // https://microsoft.github.io/z3guide/docs/theories/Bitvectors/
 
     var registerVars = new List<string> { "a", "b", "c" };
     var registerCounts = registerVars.Select(_ => 0).ToList();
