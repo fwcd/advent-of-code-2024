@@ -35,9 +35,12 @@ public class Day18 {
     public final OptionalInt findShortestPath() {
       // Your run-of-the-mill Dijkstra implementation.
 
-      // We could probably optimize this a bit by adding one of the A*
+      // Note 1: We could probably optimize this a bit by adding one of the A*
       // heuristics (e.g. use abs(pos.x - end.x) + abs(pos.y - end.y) to
       // estimate the distance to the goal), but this works well enough.
+
+      // Note 2: BFS would have probably already worked, since we're dealing
+      // with distances of 1 on a grid... but hey, it works!
 
       Vec2 start = getStart();
       Vec2 end = getEnd();
