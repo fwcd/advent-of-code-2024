@@ -85,6 +85,7 @@ impl Racetrack {
                 if !condition(node) {
                     break;
                 }
+                println!("{node:?}");
                 paths.push(node);
             }
 
@@ -151,7 +152,7 @@ fn main() {
     let shortest_path = track.find_paths(start, end, CheatPolicy::Forbidden, |_| true)[0];
     let base_picos = shortest_path.picos;
 
-    let cheat_paths = track.find_paths(start, end, CheatPolicy::Allowed, |n| n.picos < base_picos);
+    let cheat_paths = track.find_paths(start, end, CheatPolicy::Allowed, |n| n.picos <= base_picos - 100);
     let part1 = cheat_paths.len();
 
     println!("Part 1: {part1}");
