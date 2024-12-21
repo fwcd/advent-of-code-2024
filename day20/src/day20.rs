@@ -46,7 +46,7 @@ impl PartialOrd for Node {
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 enum CheatPolicy {
-    Allowed,
+    Allowed { picos: i32 },
     Forbidden,
 }
 
@@ -96,7 +96,7 @@ impl Racetrack {
                         if self.in_bounds(neigh) {
                             let is_wall = self[neigh] == '#';
 
-                            let cheats_allowed = cheat_policy == CheatPolicy::Allowed;
+                            let cheats_allowed = matches!(cheat_policy, CheatPolicy::Allowed { .. });
                             let can_cheat = cheats_allowed && node.cheat.map_or(true, |c| c.picos_left > 0);
                             let new_cheat = if let Some(cheat) = node.cheat {
                                 let is_ending = cheat.picos_left == 1;
@@ -105,7 +105,11 @@ impl Racetrack {
                                 }
                                 Some(Cheat { start: cheat.start, end: if is_ending { Some(neigh) } else { cheat.end }, picos_left: (cheat.picos_left - 1).max(0) })
                             } else if cheats_allowed && is_wall {
-                                Some(Cheat { start: node.pos, end: None, picos_left: 1 })
+                                if let CheatPolicy::Allowed { picos: cheat_picos } = cheat_policy {
+                                    Some(Cheat { start: node.pos, end: None, picos_left: cheat_picos })
+                                } else {
+                                    unreachable!()
+                                }
                             } else {
                                 node.cheat
                             };
@@ -152,8 +156,11 @@ fn main() {
     let shortest_path = track.find_paths(start, end, CheatPolicy::Forbidden, |_| true)[0];
     let base_picos = shortest_path.picos;
 
-    let cheat_paths = track.find_paths(start, end, CheatPolicy::Allowed, |n| n.picos <= base_picos - 100);
-    let part1 = cheat_paths.len();
+    // let cheat_paths1 = track.find_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |n| n.picos <= base_picos - 100);
+    // let part1 = cheat_paths1.len();
+    // println!("Part 1: {part1}");
 
-    println!("Part 1: {part1}");
+    let cheat_paths2 = track.find_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |n| n.picos <= base_picos - 100);
+    let part2 = cheat_paths2.len();
+    println!("Part 2: {part2}");
 }
