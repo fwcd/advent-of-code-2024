@@ -1,15 +1,19 @@
-{ stdenv, ruby }:
+{ stdenv, rustc }:
   stdenv.mkDerivation {
     name = "advent-of-code-2023-day20";
     src = ./src;
 
-    buildInputs = [
-      ruby
+    nativeBuildInputs = [
+      rustc
     ];
+
+    buildPhase = ''
+      mkdir -p out
+      rustc -o out/day20 -C opt-level=3 day20.rs
+    '';
 
     installPhase = ''
       mkdir -p $out/bin
-      cp day20.rb $out/bin/day20
-      chmod +x $out/bin/day20
+      cp out/day20 $out/bin/day20
     '';
   }

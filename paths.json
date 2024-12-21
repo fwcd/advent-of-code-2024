@@ -154,9 +154,9 @@
   },
   {
     "lang": {
-      "codemirror": "ruby",
-      "name": "Ruby"
+      "codemirror": "rust",
+      "name": "Rust"
     },
-    "path": "day20/src/day20.rb"
+    "path": "day20/src/day20.rs"
   }
 ]
