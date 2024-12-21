@@ -7,6 +7,8 @@ fn main() {
         process::exit(1);
     }
 
-    let raw_input = fs::read_to_string(&args[1]).unwrap();
-    println!("{raw_input}");
+    let raw = fs::read_to_string(&args[1]).unwrap();
+    let matrix: Vec<_> = raw.trim().split("\n").collect();
+
+    println!("{matrix:?}");
 }
