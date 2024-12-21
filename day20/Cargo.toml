@@ -1,0 +1,10 @@
+[package]
+name = "advent-of-code-2024-day20"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[[bin]]
+name = "day20"
+path = "src/day20.rs"

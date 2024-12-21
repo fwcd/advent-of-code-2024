@@ -1,19 +1,19 @@
-{ stdenv, rustc }:
+{ stdenv, cargo }:
   stdenv.mkDerivation {
     name = "advent-of-code-2023-day20";
-    src = ./src;
+    src = ./.;
 
     nativeBuildInputs = [
-      rustc
+      cargo
     ];
 
     buildPhase = ''
-      mkdir -p out
-      rustc -o out/day20 -C opt-level=3 day20.rs
+      mkdir -p target
+      CARGO_TARGET_DIR=target cargo build --release
     '';
 
     installPhase = ''
       mkdir -p $out/bin
-      cp out/day20 $out/bin/day20
+      cp target/release/day20 $out/bin
     '';
   }
