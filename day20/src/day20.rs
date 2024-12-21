@@ -28,6 +28,7 @@ struct Cheat {
 struct Node {
     pos: Vec2<i32>,
     picos: i32,
+    cost: i32,
     cheat: Option<Cheat>,
 }
 
@@ -70,13 +71,13 @@ impl Racetrack {
 
     /// Finds paths through the racetrack, ordered ascendingly by total picoseconds.
     fn find_paths(&self, start: Vec2<i32>, end: Vec2<i32>, cheat_policy: CheatPolicy, condition: impl Fn(Node) -> bool) -> Vec<Node> {
-        // Your run-of-the-mill Dijkstra implementation
+        // Your run-of-the-mill A* (Dijkstra + heuristic) implementation
 
         let mut queue = BinaryHeap::new();
         let mut visited = HashSet::new();
         let mut paths = Vec::new();
 
-        queue.push(Node { pos: start, picos: 0, cheat: None });
+        queue.push(Node { pos: start, picos: 0, cost: 0, cheat: None });
         visited.insert((start, None));
 
         while let Some(node) = queue.pop() {
@@ -110,7 +111,11 @@ impl Racetrack {
 
                             if !visited.contains(&(neigh, new_cheat)) && (!is_wall || can_cheat) {
                                 visited.insert((neigh, new_cheat));
-                                queue.push(Node { pos: neigh, picos: node.picos + 1, cheat: new_cheat });
+
+                                let new_picos = node.picos + 1;
+                                let new_dist_to_end = (neigh.x.abs_diff(end.x) + neigh.y.abs_diff(end.y)) as i32;
+                                let new_cost = new_picos + new_dist_to_end;
+                                queue.push(Node { pos: neigh, picos: new_picos, cost: new_cost, cheat: new_cheat });
                             }
                         }
                     }
@@ -148,10 +153,6 @@ fn main() {
 
     let cheat_paths = track.find_paths(start, end, CheatPolicy::Allowed, |n| n.picos < base_picos);
     let part1 = cheat_paths.len();
-
-    for p in cheat_paths.iter().map(|n| (base_picos - n.picos, n.cheat)) {
-        println!("{p:?}");
-    }
 
     println!("Part 1: {part1}");
 }
