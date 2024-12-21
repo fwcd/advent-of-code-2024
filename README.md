@@ -25,6 +25,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 17**](day17): [C#](day17/src/day17.cs) (using Z3 to solve part 2)
 - [x] [**Day 18**](day18): [Java](day18/src/Day18.java)
 - [x] [**Day 19**](day19): [PyGyat](day19/src/day19.gyat)
+- [ ] [**Day 20**](day20): [Ruby](day20/src/day20.rb)
 
 ## Development
 
