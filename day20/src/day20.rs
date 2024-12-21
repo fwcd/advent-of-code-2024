@@ -81,11 +81,10 @@ impl Racetrack {
 
         while let Some(node) = queue.pop() {
             if node.pos == end {
-                // dbg!(paths.len(), node.picos);
-                paths.push(node);
                 if !condition(node) {
                     break;
                 }
+                paths.push(node);
             }
 
             for dy in -1..=1 {
@@ -144,13 +143,15 @@ fn main() {
     let start = track.locate('S').unwrap();
     let end = track.locate('E').unwrap();
 
-    let shortest_path = track.find_paths(start, end, CheatPolicy::Forbidden, |_| false)[0];
+    let shortest_path = track.find_paths(start, end, CheatPolicy::Forbidden, |_| true)[0];
     let base_picos = shortest_path.picos;
 
-    let paths = track.find_paths(start, end, CheatPolicy::Allowed, |_| true);
-    // let part1 = paths.len();
+    let cheat_paths = track.find_paths(start, end, CheatPolicy::Allowed, |n| n.picos < base_picos);
+    let part1 = cheat_paths.len();
 
-    for p in paths.iter().take(20).map(|n| (base_picos - n.picos, n.cheat)) {
+    for p in cheat_paths.iter().map(|n| (base_picos - n.picos, n.cheat)) {
         println!("{p:?}");
     }
+
+    println!("Part 1: {part1}");
 }
