@@ -43,6 +43,12 @@ impl PartialOrd for Node {
     }
 }
 
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+enum CheatPolicy {
+    Allowed,
+    Forbidden,
+}
+
 impl Racetrack {
     fn height(&self) -> i32 {
         self.rows.len() as i32
@@ -62,18 +68,24 @@ impl Racetrack {
             .find_map(|(y, row)| row.iter().enumerate().find(|(_, &cell)| cell == c).map(|(x, _)| Vec2::new(x as i32, y as i32)))
     }
 
-    fn shortest_path(&self, start: Vec2<i32>, end: Vec2<i32>) -> Option<Node> {
+    /// Finds paths through the racetrack, ordered ascendingly by total picoseconds.
+    fn find_paths(&self, start: Vec2<i32>, end: Vec2<i32>, cheat_policy: CheatPolicy, condition: impl Fn(Node) -> bool) -> Vec<Node> {
         // Your run-of-the-mill Dijkstra implementation
 
         let mut queue = BinaryHeap::new();
         let mut visited = HashSet::new();
+        let mut paths = Vec::new();
 
         queue.push(Node { pos: start, picos: 0, cheat: None });
         visited.insert((start, None));
 
         while let Some(node) = queue.pop() {
             if node.pos == end {
-                return Some(node);
+                // dbg!(paths.len(), node.picos);
+                paths.push(node);
+                if !condition(node) {
+                    break;
+                }
             }
 
             for dy in -1..=1 {
@@ -83,11 +95,16 @@ impl Racetrack {
                         if self.in_bounds(neigh) {
                             let is_wall = self[neigh] == '#';
 
-                            let can_cheat = node.cheat.map_or(true, |c| c.picos_left > 0);
+                            let cheats_allowed = cheat_policy == CheatPolicy::Allowed;
+                            let can_cheat = cheats_allowed && node.cheat.map_or(true, |c| c.picos_left > 0);
                             let new_cheat = if let Some(cheat) = node.cheat {
-                                Some(Cheat { start: cheat.start, end: if cheat.picos_left == 1 { Some(neigh) } else { cheat.end }, picos_left: (cheat.picos_left - 1).max(0) })
-                            } else if is_wall {
-                                Some(Cheat { start: neigh, end: None, picos_left: 1 })
+                                let is_ending = cheat.picos_left == 1;
+                                if is_ending && is_wall {
+                                    continue;
+                                }
+                                Some(Cheat { start: cheat.start, end: if is_ending { Some(neigh) } else { cheat.end }, picos_left: (cheat.picos_left - 1).max(0) })
+                            } else if cheats_allowed && is_wall {
+                                Some(Cheat { start: node.pos, end: None, picos_left: 1 })
                             } else {
                                 node.cheat
                             };
@@ -102,7 +119,7 @@ impl Racetrack {
             }
         }
 
-        None
+        paths
     }
 }
 
@@ -127,5 +144,13 @@ fn main() {
     let start = track.locate('S').unwrap();
     let end = track.locate('E').unwrap();
 
-    println!("Shortest: {:?}", track.shortest_path(start, end).unwrap());
+    let shortest_path = track.find_paths(start, end, CheatPolicy::Forbidden, |_| false)[0];
+    let base_picos = shortest_path.picos;
+
+    let paths = track.find_paths(start, end, CheatPolicy::Allowed, |_| true);
+    // let part1 = paths.len();
+
+    for p in paths.iter().take(20).map(|n| (base_picos - n.picos, n.cheat)) {
+        println!("{p:?}");
+    }
 }
