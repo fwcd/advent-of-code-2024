@@ -18,14 +18,22 @@ struct Racetrack {
 }
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
+struct Cheat {
+    start: Vec2<i32>,
+    end: Option<Vec2<i32>>,
+    picos_left: i32,
+}
+
+#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 struct Node {
     pos: Vec2<i32>,
     picos: i32,
+    cheat: Option<Cheat>,
 }
 
 impl Ord for Node {
     fn cmp(&self, other: &Self) -> Ordering {
-        self.picos.cmp(&other.picos)
+        other.picos.cmp(&self.picos) // Intentionally reversed to make BinaryHeap behave like a min-heap
     }
 }
 
@@ -54,27 +62,40 @@ impl Racetrack {
             .find_map(|(y, row)| row.iter().enumerate().find(|(_, &cell)| cell == c).map(|(x, _)| Vec2::new(x as i32, y as i32)))
     }
 
-    fn shortest_path(&self, start: Vec2<i32>, end: Vec2<i32>) -> Option<i32> {
+    fn shortest_path(&self, start: Vec2<i32>, end: Vec2<i32>) -> Option<Node> {
         // Your run-of-the-mill Dijkstra implementation
 
         let mut queue = BinaryHeap::new();
         let mut visited = HashSet::new();
 
-        queue.push(Node { pos: start, picos: 0 });
-        visited.insert(start);
+        queue.push(Node { pos: start, picos: 0, cheat: None });
+        visited.insert((start, None));
 
         while let Some(node) = queue.pop() {
             if node.pos == end {
-                return Some(node.picos);
+                return Some(node);
             }
 
             for dy in -1..=1 {
                 for dx in -1..=1 {
                     if (dx != 0) ^ (dy != 0) {
                         let neigh = Vec2::new(node.pos.x + dx, node.pos.y + dy);
-                        if !visited.contains(&neigh) && self.in_bounds(neigh) && self[neigh] != '#' {
-                            visited.insert(neigh);
-                            queue.push(Node { pos: neigh, picos: node.picos + 1 });
+                        if self.in_bounds(neigh) {
+                            let is_wall = self[neigh] == '#';
+
+                            let can_cheat = node.cheat.map_or(true, |c| c.picos_left > 0);
+                            let new_cheat = if let Some(cheat) = node.cheat {
+                                Some(Cheat { start: cheat.start, end: if cheat.picos_left == 1 { Some(neigh) } else { cheat.end }, picos_left: (cheat.picos_left - 1).max(0) })
+                            } else if is_wall {
+                                Some(Cheat { start: neigh, end: None, picos_left: 1 })
+                            } else {
+                                node.cheat
+                            };
+
+                            if !visited.contains(&(neigh, new_cheat)) && (!is_wall || can_cheat) {
+                                visited.insert((neigh, new_cheat));
+                                queue.push(Node { pos: neigh, picos: node.picos + 1, cheat: new_cheat });
+                            }
                         }
                     }
                 }
@@ -106,5 +127,5 @@ fn main() {
     let start = track.locate('S').unwrap();
     let end = track.locate('E').unwrap();
 
-    println!("Shortest: {}", track.shortest_path(start, end).unwrap());
+    println!("Shortest: {:?}", track.shortest_path(start, end).unwrap());
 }
