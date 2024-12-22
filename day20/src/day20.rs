@@ -63,6 +63,14 @@ impl Racetrack {
         pos.x >= 0 && pos.x < self.width() && pos.y >= 0 && pos.y < self.height()
     }
 
+    fn neighbors<'a>(&'a self, pos: Vec2<i32>) -> impl Iterator<Item = Vec2<i32>> + 'a {
+        (-1..=1)
+            .flat_map(move |dy| (-1..=1)
+                .filter(move |&dx| (dx != 0) ^ (dy != 0))
+                .map(move |dx| Vec2::new(pos.x + dx, pos.y + dy)))
+            .filter(move |&neigh| self.in_bounds(neigh))
+    }
+
     fn locate(&self, c: char) -> Option<Vec2<i32>> {
         self.rows.iter()
             .enumerate()
@@ -89,41 +97,34 @@ impl Racetrack {
                 paths.push(node);
             }
 
-            for dy in -1..=1 {
-                for dx in -1..=1 {
-                    if (dx != 0) ^ (dy != 0) {
-                        let neigh = Vec2::new(node.pos.x + dx, node.pos.y + dy);
-                        if self.in_bounds(neigh) {
-                            let is_wall = self[neigh] == '#';
+            for neigh in self.neighbors(node.pos) {
+                let is_wall = self[neigh] == '#';
 
-                            let cheats_allowed = matches!(cheat_policy, CheatPolicy::Allowed { .. });
-                            let can_cheat = cheats_allowed && node.cheat.map_or(true, |c| c.picos_left > 0);
-                            let new_cheat = if let Some(cheat) = node.cheat {
-                                let is_ending = cheat.picos_left == 1;
-                                if is_ending && is_wall {
-                                    continue;
-                                }
-                                Some(Cheat { start: cheat.start, end: if is_ending { Some(neigh) } else { cheat.end }, picos_left: (cheat.picos_left - 1).max(0) })
-                            } else if cheats_allowed && is_wall {
-                                if let CheatPolicy::Allowed { picos: cheat_picos } = cheat_policy {
-                                    Some(Cheat { start: node.pos, end: None, picos_left: cheat_picos })
-                                } else {
-                                    unreachable!()
-                                }
-                            } else {
-                                node.cheat
-                            };
-
-                            if !visited.contains(&(neigh, new_cheat)) && (!is_wall || can_cheat) {
-                                visited.insert((neigh, new_cheat));
-
-                                let new_picos = node.picos + 1;
-                                let new_dist_to_end = (neigh.x.abs_diff(end.x) + neigh.y.abs_diff(end.y)) as i32;
-                                let new_cost = new_picos + new_dist_to_end;
-                                queue.push(Node { pos: neigh, picos: new_picos, cost: new_cost, cheat: new_cheat });
-                            }
-                        }
+                let cheats_allowed = matches!(cheat_policy, CheatPolicy::Allowed { .. });
+                let can_cheat = cheats_allowed && node.cheat.map_or(true, |c| c.picos_left > 0);
+                let new_cheat = if let Some(cheat) = node.cheat {
+                    let is_ending = cheat.picos_left == 1;
+                    if is_ending && is_wall {
+                        continue;
                     }
+                    Some(Cheat { start: cheat.start, end: if is_ending { Some(neigh) } else { cheat.end }, picos_left: (cheat.picos_left - 1).max(0) })
+                } else if cheats_allowed && is_wall {
+                    if let CheatPolicy::Allowed { picos: cheat_picos } = cheat_policy {
+                        Some(Cheat { start: node.pos, end: None, picos_left: cheat_picos })
+                    } else {
+                        unreachable!()
+                    }
+                } else {
+                    node.cheat
+                };
+
+                if !visited.contains(&(neigh, new_cheat)) && (!is_wall || can_cheat) {
+                    visited.insert((neigh, new_cheat));
+
+                    let new_picos = node.picos + 1;
+                    let new_dist_to_end = (neigh.x.abs_diff(end.x) + neigh.y.abs_diff(end.y)) as i32;
+                    let new_cost = new_picos + new_dist_to_end;
+                    queue.push(Node { pos: neigh, picos: new_picos, cost: new_cost, cheat: new_cheat });
                 }
             }
         }
