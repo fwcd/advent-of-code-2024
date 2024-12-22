@@ -157,9 +157,9 @@ fn main() {
     let shortest_path = track.find_paths(start, end, CheatPolicy::Forbidden, |_| true)[0];
     let base_picos = shortest_path.picos;
 
-    // let cheat_paths1 = track.find_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |n| n.picos <= base_picos - 100);
-    // let part1 = cheat_paths1.len();
-    // println!("Part 1: {part1}");
+    let cheat_paths1 = track.find_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |n| n.picos <= base_picos - 100);
+    let part1 = cheat_paths1.len();
+    println!("Part 1: {part1}");
 
     let cheat_paths2 = track.find_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |n| n.picos <= base_picos - 100);
     let part2 = cheat_paths2.len();
