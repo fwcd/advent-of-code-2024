@@ -62,16 +62,16 @@ impl Skip {
 }
 
 impl Racetrack {
-    fn height(&self) -> i32 {
-        self.rows.len() as i32
+    fn height(&self) -> usize {
+        self.rows.len()
     }
 
-    fn width(&self) -> i32 {
-        self.rows[0].len() as i32
+    fn width(&self) -> usize {
+        self.rows[0].len()
     }
 
     fn in_bounds(&self, pos: Vec2<i32>) -> bool {
-        pos.x >= 0 && pos.x < self.width() && pos.y >= 0 && pos.y < self.height()
+        pos.x >= 0 && pos.x < self.width() as i32 && pos.y >= 0 && pos.y < self.height() as i32
     }
 
     fn neighbors<'a>(&'a self, pos: Vec2<i32>) -> impl Iterator<Item = Vec2<i32>> + 'a {
