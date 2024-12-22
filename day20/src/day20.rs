@@ -144,11 +144,12 @@ impl Racetrack {
                 if !condition(node.picos) {
                     break;
                 }
+                // println!("{}", node.picos);
                 let debug_count = skips[&start].len() - node.cost;
                 debug_counts.insert(debug_count, debug_counts.get(&debug_count).cloned().unwrap_or(0) + 1);
                 let mut values = debug_counts.iter().collect::<Vec<_>>();
                 values.sort_by_key(|v| v.0);
-                // println!("{:?}", values);
+                println!("{:?}", values);
                 // println!("{debug_count}, {node:?}");
                 paths += 1;
                 continue;
@@ -166,12 +167,16 @@ impl Racetrack {
 
                     let mut new_cheats = Vec::new();
                     if let Some(cheat) = node.cheat {
-                        let is_ending = cheat.picos_left() == 1 || neigh == end;
-                        if !is_ending {
-                            new_cheats.push(Some(Cheat { picos: cheat.picos + 1, ..cheat }));
-                        }
-                        if !is_wall && cheat.start.manhattan_dist(neigh) == cheat.picos + 1 { // Stopping the cheat is always an option unless we're in a wall or took a suboptimal path
-                            new_cheats.push(Some(Cheat { end: Some(neigh), picos: cheat.total_picos, ..cheat }));
+                        if cheat.picos_left() == 0 {
+                            new_cheats.push(Some(cheat));
+                        } else {
+                            let is_ending = cheat.picos_left() == 1 || neigh == end;
+                            if !is_ending {
+                                new_cheats.push(Some(Cheat { picos: cheat.picos + 1, ..cheat }));
+                            }
+                            if !is_wall { // Stopping the cheat is always an option unless we're in a wall
+                                new_cheats.push(Some(Cheat { end: Some(neigh), picos: cheat.total_picos, ..cheat }));
+                            }
                         }
                     } else {
                         new_cheats.push(None);
@@ -223,7 +228,7 @@ fn main() {
     let base_picos = skips[&start].len();
 
     // track.count_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |picos| picos < base_picos);
-    // track.count_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |picos| picos + 50 <= base_picos);
+    track.count_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |picos| picos + 50 <= base_picos);
 
     let part1 = track.count_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |picos| picos + 100 <= base_picos);
     println!("Part 1: {part1}");
