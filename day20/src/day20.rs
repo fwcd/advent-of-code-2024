@@ -12,6 +12,12 @@ impl<T> Vec2<T> {
     }
 }
 
+impl Vec2<i32> {
+    fn manhattan_dist(self, rhs: Self) -> usize {
+        (self.x.abs_diff(rhs.x) + self.y.abs_diff(rhs.y)) as usize
+    }
+}
+
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 struct Racetrack {
     rows: Vec<Vec<char>>,
@@ -21,7 +27,14 @@ struct Racetrack {
 struct Cheat {
     start: Vec2<i32>,
     end: Option<Vec2<i32>>,
-    picos_left: usize,
+    total_picos: usize,
+    picos: usize,
+}
+
+impl Cheat {
+    fn picos_left(self) -> usize {
+        self.total_picos - self.picos
+    }
 }
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
@@ -125,7 +138,7 @@ impl Racetrack {
 
         while let Some(node) = queue.pop() {
             let cheats_allowed = matches!(cheat_policy, CheatPolicy::Allowed { .. });
-            let can_cheat = cheats_allowed && node.cheat.map_or(true, |c| c.picos_left > 0);
+            let can_cheat = cheats_allowed && node.cheat.map_or(true, |c| c.picos_left() > 0);
 
             if node.pos == end {
                 if !condition(node.picos) {
@@ -135,7 +148,8 @@ impl Racetrack {
                 debug_counts.insert(debug_count, debug_counts.get(&debug_count).cloned().unwrap_or(0) + 1);
                 let mut values = debug_counts.iter().collect::<Vec<_>>();
                 values.sort_by_key(|v| v.0);
-                println!("{:?}", values);
+                // println!("{:?}", values);
+                // println!("{debug_count}, {node:?}");
                 paths += 1;
                 continue;
             }
@@ -150,37 +164,29 @@ impl Racetrack {
                 for neigh in self.neighbors(node.pos) {
                     let is_wall = self[neigh] == '#';
 
-                    let new_cheats = if let Some(cheat) = node.cheat {
-                        let is_ending = cheat.picos_left == 1 || neigh == end;
-                        if is_ending && is_wall {
-                            // A cheat that ends in a wall cannot succeed, so we discard that branch
-                            continue;
-                        }
-                        let mut new_cheats = Vec::new();
+                    let mut new_cheats = Vec::new();
+                    if let Some(cheat) = node.cheat {
+                        let is_ending = cheat.picos_left() == 1 || neigh == end;
                         if !is_ending {
-                            new_cheats.push(Some(Cheat { picos_left: cheat.picos_left - 1, ..cheat }));
+                            new_cheats.push(Some(Cheat { picos: cheat.picos + 1, ..cheat }));
                         }
-                        if is_ending || !is_wall { // Stopping the cheat is also an option if we're not in a wall
-                            new_cheats.push(Some(Cheat { end: Some(neigh), picos_left: 0, ..cheat }));
-                        }
-                        new_cheats
-                    } else if cheats_allowed && is_wall {
-                        if let CheatPolicy::Allowed { picos: cheat_picos } = cheat_policy {
-                            vec![Some(Cheat { start: node.pos, end: None, picos_left: cheat_picos - 1 })]
-                        } else {
-                            unreachable!()
+                        if !is_wall && cheat.start.manhattan_dist(neigh) == cheat.picos + 1 { // Stopping the cheat is always an option unless we're in a wall or took a suboptimal path
+                            new_cheats.push(Some(Cheat { end: Some(neigh), picos: cheat.total_picos, ..cheat }));
                         }
                     } else {
-                        vec![node.cheat]
-                    };
+                        new_cheats.push(None);
+                        if let CheatPolicy::Allowed { picos: cheat_picos } = cheat_policy {
+                            new_cheats.push(Some(Cheat { start: node.pos, end: None, total_picos: cheat_picos, picos: 1 }));
+                        }
+                    }
 
                     for new_cheat in new_cheats {
-                        if !visited.contains(&(neigh, new_cheat)) && (!is_wall || can_cheat) {
+                        let is_cheating = new_cheat.map_or(false, |c| c.picos_left() > 0);
+                        if !visited.contains(&(neigh, new_cheat)) && (!is_wall || is_cheating) {
                             visited.insert((neigh, new_cheat));
 
                             let new_picos = node.picos + 1;
-                            let new_dist_to_end = (neigh.x.abs_diff(end.x) + neigh.y.abs_diff(end.y)) as usize;
-                            let new_cost = new_picos + new_dist_to_end;
+                            let new_cost = new_picos + neigh.manhattan_dist(end);
                             queue.push(Node { pos: neigh, picos: new_picos, cost: new_cost, cheat: new_cheat });
                         }
                     }
@@ -217,11 +223,11 @@ fn main() {
     let base_picos = skips[&start].len();
 
     // track.count_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |picos| picos < base_picos);
-    track.count_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |picos| picos + 50 <= base_picos);
+    // track.count_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |picos| picos + 50 <= base_picos);
 
-    // let part1 = track.count_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |picos| picos + 100 <= base_picos);
-    // println!("Part 1: {part1}");
+    let part1 = track.count_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |picos| picos + 100 <= base_picos);
+    println!("Part 1: {part1}");
 
-    // let part2 = track.count_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |picos| picos + 100 <= base_picos);
-    // println!("Part 2: {part2}");
+    let part2 = track.count_paths(start, end, CheatPolicy::Allowed { picos: 20 }, |picos| picos + 100 <= base_picos);
+    println!("Part 2: {part2}");
 }
