@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, collections::{BinaryHeap, HashSet}, env, fs, ops::Index, process};
+use std::{cmp::Ordering, collections::{BinaryHeap, HashMap, HashSet}, env, fs, ops::Index, process};
 
 #[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
 struct Vec2<T> {
@@ -75,6 +75,27 @@ impl Racetrack {
         self.rows.iter()
             .enumerate()
             .find_map(|(y, row)| row.iter().enumerate().find(|(_, &cell)| cell == c).map(|(x, _)| Vec2::new(x as i32, y as i32)))
+    }
+
+    /// Traces out the racetrack, finding the distances to the given end.
+    fn find_distances_to_end(&self, start: Vec2<i32>, end: Vec2<i32>) -> HashMap<Vec2<i32>, i32> {
+        let mut stack = Vec::new();
+        let mut distances = HashMap::new();
+
+        stack.push(start);
+
+        while let Some(next) = self.neighbors(*stack.last().unwrap()).find(|&v| self[v] != '#' && Some(&v) != stack.get(stack.len() - 2)) {
+            stack.push(next);
+            if next == end {
+                break;
+            }
+        }
+        
+        for (i, &pos) in stack.iter().enumerate() {
+            distances.insert(pos, (stack.len() - 1 - i) as i32);
+        }
+
+        distances
     }
 
     /// Finds paths through the racetrack, ordered ascendingly by total picoseconds.
@@ -154,8 +175,8 @@ fn main() {
     let start = track.locate('S').unwrap();
     let end = track.locate('E').unwrap();
 
-    let shortest_path = track.find_paths(start, end, CheatPolicy::Forbidden, |_| true)[0];
-    let base_picos = shortest_path.picos;
+    let distances_to_end = track.find_distances_to_end(start, end);
+    let base_picos = distances_to_end[&start];
 
     let cheat_paths1 = track.find_paths(start, end, CheatPolicy::Allowed { picos: 2 }, |n| n.picos <= base_picos - 100);
     let part1 = cheat_paths1.len();
