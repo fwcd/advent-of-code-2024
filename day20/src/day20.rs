@@ -53,9 +53,10 @@ impl PartialOrd for Node {
     }
 }
 
-#[derive(Clone, Copy, Debug, Hash, PartialEq, Eq)]
-struct CheatPolicy {
-    picos: usize,
+#[derive(Clone, Debug, PartialEq, Eq)]
+struct Trace {
+    dists_to_end: HashMap<Vec2<i32>, usize>,
+    end: Vec2<i32>,
 }
 
 impl Racetrack {
@@ -101,32 +102,30 @@ impl Racetrack {
             .find_map(|(y, row)| row.iter().enumerate().find(|(_, &cell)| cell == c).map(|(x, _)| Vec2::new(x as i32, y as i32)))
     }
 
-    /// Traces out the racetrack, finding the distances to the given end.
-    fn find_distances_to_end(&self, start: Vec2<i32>, end: Vec2<i32>) -> HashMap<Vec2<i32>, usize> {
+    /// Traces out the racetrack to the end, finding the distances from every position.
+    fn trace_to_end(&self, start: Vec2<i32>) -> Trace {
         let mut stack = Vec::new();
-        let mut distances = HashMap::new();
+        let mut dists_to_end = HashMap::new();
 
         stack.push(start);
 
         while let Some(next) = self.neighbors(*stack.last().unwrap()).find(|&v| self[v] != '#' && Some(&v) != stack.get(stack.len() - 2)) {
             stack.push(next);
-            if next == end {
-                break;
-            }
-        }
-        
-        for (i, &pos) in stack.iter().enumerate() {
-            distances.insert(pos, stack.len() - 1 - i);
         }
 
-        distances
+        for (i, &pos) in stack.iter().enumerate() {
+            dists_to_end.insert(pos, stack.len() - 1 - i);
+        }
+
+        Trace { dists_to_end, end: *stack.last().unwrap() }
     }
 
     /// Finds paths through the racetrack, ordered ascendingly by total picoseconds.
-    fn count_paths(&self, start: Vec2<i32>, end: Vec2<i32>, cheat_policy: CheatPolicy, condition: impl Fn(usize) -> bool) -> i32 {
+    fn count_paths(&self, start: Vec2<i32>, cheat_picos: usize) -> i32 {
         // Your (not quite) run-of-the-mill Dijkstra implementation
 
-        let dists_to_end = self.find_distances_to_end(start, end);
+        let trace = self.trace_to_end(start);
+        let base_picos = trace.dists_to_end[&start];
 
         let mut queue = BinaryHeap::new();
         let mut visited = HashSet::new();
@@ -144,8 +143,8 @@ impl Racetrack {
         offer_node!(Node { pos: start, picos: 0, cheat: None });
 
         while let Some(node) = queue.pop() {
-            if node.pos == end {
-                if !condition(node.picos) {
+            if node.pos == trace.end {
+                if node.picos + 100 > base_picos {
                     break;
                 }
                 paths += 1;
@@ -155,11 +154,11 @@ impl Racetrack {
             assert!(node.cheat.is_none());
 
             // Explore cheating (and hopping straight to the end since we can't cheat afterwards)
-            for target in self.cheat_targets(node.pos, cheat_policy.picos) {
+            for target in self.cheat_targets(node.pos, cheat_picos) {
                 let cheat_picos = node.pos.manhattan_dist(target);
                 let new_cheat = Some(Cheat { start: node.pos, end: target, picos: cheat_picos });
-                let new_picos = node.picos + cheat_picos + dists_to_end[&target];
-                let new_node = Node { pos: end, picos: new_picos, cheat: new_cheat };
+                let new_picos = node.picos + cheat_picos + trace.dists_to_end[&target];
+                let new_node = Node { pos: trace.end, picos: new_picos, cheat: new_cheat };
                 offer_node!(new_node);
             }
 
@@ -195,14 +194,10 @@ fn main() {
     let track = Racetrack { rows: raw.trim().split("\n").map(|row| row.chars().collect()).collect() };
 
     let start = track.locate('S').unwrap();
-    let end = track.locate('E').unwrap();
 
-    let dists_to_end = track.find_distances_to_end(start, end);
-    let base_picos = dists_to_end[&start];
-
-    let part1 = track.count_paths(start, end, CheatPolicy { picos: 2 }, |picos| picos + 100 <= base_picos);
+    let part1 = track.count_paths(start, 2);
     println!("Part 1: {part1}");
 
-    let part2 = track.count_paths(start, end, CheatPolicy { picos: 20 }, |picos| picos + 100 <= base_picos);
+    let part2 = track.count_paths(start, 20);
     println!("Part 2: {part2}");
 }
