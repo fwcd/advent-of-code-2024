@@ -47,7 +47,7 @@ struct Node {
 
 impl Ord for Node {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.picos.cmp(&self.picos) // Intentionally reversed to make BinaryHeap behave like a min-heap
+        other.cost.cmp(&self.cost) // Intentionally reversed to make BinaryHeap behave like a min-heap
     }
 }
 
