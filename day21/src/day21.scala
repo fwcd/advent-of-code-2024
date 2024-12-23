@@ -41,6 +41,8 @@ case class Pad(ptype: PadType, pos: Vec2) {
 
   def activate: Char = layout(pos)
 
+  def isValid = layout.contains(pos)
+
   def perform(action: Char): (Option[Char], Pad) =
     action match
       case 'A' => (Some(activate), this)
@@ -53,15 +55,21 @@ object Pad {
 
 case class State(pads: List[Pad] = List(), output: String = "") {
   def perform(action: Char) =
-    val (newPads, outAction) = pads.foldLeft[(List[Pad], Option[Char])]((List(), Some(action))) { case ((pads, action), pad) =>
-      action match
-        case Some(action) =>
-          val (newAction, newPad) = pad.perform(action)
-          (pads :+ newPad, newAction)
-        case None => (pads :+ pad, None)
-    }
-    val newOutput = outAction.map(output.appended(_)).getOrElse(output)
-    State(newPads, newOutput)
+    for
+      (newPads, outAction) <- pads.foldLeft[Option[(List[Pad], Option[Char])]](Some((List(), Some(action)))) { (acc, pad) =>
+        acc.flatMap { case (pads, action) =>
+          action match
+            case Some(action) =>
+              for
+                (newAction, newPad) <- Some(pad.perform(action))
+                if newPad.isValid
+              yield (pads :+ newPad, newAction)
+            case None => Some((pads :+ pad, None))
+        }
+      }
+    yield
+      val newOutput = outAction.map(output.appended(_)).getOrElse(output)
+      State(newPads, newOutput)
 }
 
 case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
@@ -84,11 +92,14 @@ def shortestProgram(startState: State, goal: String): String =
     if node.state.output == goal then
       return node.program
 
-    for action <- ACTIONS do
-      val newState = node.state.perform(action)
-      if !visited.contains(newState) then
-        visited.add(newState)
-        queue.enqueue(Node(newState, node.program.appended(action)))
+    if node.state.output.length < goal.length then
+      for
+        action <- ACTIONS
+        newState <- node.state.perform(action)
+      do
+        if !visited.contains(newState) then
+          visited.add(newState)
+          queue.enqueue(Node(newState, node.program.appended(action)))
 
   throw new RuntimeException("No shortest program found")
 
