@@ -108,13 +108,13 @@ def shortestProgram(robots: Int, goal: String): String =
   throw new RuntimeException("No shortest program found")
 
 def shortestProgramLength(robots: Int, goal: String): Int =
-  case class State(pos: Vec2 = PadType.Num.locate('A'), output: String = "")
+  case class State(pos: Vec2 = PadType.Num.locate('A'), dPos: Vec2 = PadType.Dir.locate('A'), output: String = "")
 
   case class Node(state: State, total: Int = 0) extends Ordered[Node] {
     def compare(that: Node): Int = that.total compare total // Intentionally reversed for min-heap
   }
 
-  def cost(state: State, newState: State, action: Char): Int = 1
+  def cost(robots: Int, pos: Vec2, dPos: Vec2, action: Char): (Int, Vec2) = (1, dPos)
 
   // Your run-of-the-mill Dijkstra implementation (this time on the numpad)
 
@@ -137,11 +137,12 @@ def shortestProgramLength(robots: Int, goal: String): Int =
       do
         val newPos = node.state.pos + DIRECTIONS.get(action).getOrElse(Vec2(0, 0))
         if PAD_LAYOUTS(PadType.Num).contains(newPos) then
+          val (c, newDPos) = cost(robots, node.state.pos, node.state.dPos, action)
           val newOutput = if action == 'A' then node.state.output.appended(PAD_LAYOUTS(PadType.Num)(node.state.pos)) else node.state.output
-          val newState = State(newPos, newOutput)
+          val newState = State(newPos, newDPos, newOutput)
           if !visited.contains(newState) then
             visited.add(newState)
-            queue.enqueue(Node(newState, node.total + cost(node.state, newState, action)))
+            queue.enqueue(Node(newState, node.total + c))
 
   throw new RuntimeException("No shortest program found")
 
