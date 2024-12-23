@@ -38,13 +38,12 @@ struct Cheat {
 struct Node {
     pos: Vec2<i32>,
     picos: usize,
-    cost: usize,
     cheat: Option<Cheat>,
 }
 
 impl Ord for Node {
     fn cmp(&self, other: &Self) -> Ordering {
-        other.cost.cmp(&self.cost) // Intentionally reversed to make BinaryHeap behave like a min-heap
+        other.picos.cmp(&self.picos) // Intentionally reversed to make BinaryHeap behave like a min-heap
     }
 }
 
@@ -125,7 +124,7 @@ impl Racetrack {
 
     /// Finds paths through the racetrack, ordered ascendingly by total picoseconds.
     fn count_paths(&self, start: Vec2<i32>, end: Vec2<i32>, cheat_policy: CheatPolicy, condition: impl Fn(usize) -> bool) -> i32 {
-        // Your (not quite) run-of-the-mill A* (Dijkstra + heuristic) implementation
+        // Your (not quite) run-of-the-mill Dijkstra implementation
 
         let dists_to_end = self.find_distances_to_end(start, end);
 
@@ -142,7 +141,7 @@ impl Racetrack {
             }
         }
 
-        offer_node!(Node { pos: start, picos: 0, cost: 0, cheat: None });
+        offer_node!(Node { pos: start, picos: 0, cheat: None });
 
         while let Some(node) = queue.pop() {
             if node.pos == end {
@@ -160,7 +159,7 @@ impl Racetrack {
                 let cheat_picos = node.pos.manhattan_dist(target);
                 let new_cheat = Some(Cheat { start: node.pos, end: target, picos: cheat_picos });
                 let new_picos = node.picos + cheat_picos + dists_to_end[&target];
-                let new_node = Node { pos: end, picos: new_picos, cost: new_picos, cheat: new_cheat };
+                let new_node = Node { pos: end, picos: new_picos, cheat: new_cheat };
                 offer_node!(new_node);
             }
 
@@ -168,8 +167,7 @@ impl Racetrack {
             for neigh in self.neighbors(node.pos) {
                 if !self.is_wall(neigh) {
                     let new_picos = node.picos + 1;
-                    let new_cost = new_picos + neigh.manhattan_dist(end);
-                    offer_node!(Node { pos: neigh, picos: new_picos, cost: new_cost, cheat: node.cheat });
+                    offer_node!(Node { pos: neigh, picos: new_picos, cheat: node.cheat });
                 }
             }
         }
