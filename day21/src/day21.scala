@@ -1,4 +1,5 @@
-#!/usr/bin/env scala
+import scala.io.Source
 
-@main def main =
-  println("Hello world")
+@main def main(path: String) =
+  val input = Source.fromFile(path).getLines.toList
+  println(s"$input")
