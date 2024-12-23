@@ -44,6 +44,10 @@ Every day is packaged up to take exactly one command-line argument, the input fi
 > [!TIP]
 > The build environment can be added to the current `PATH` using `nix develop`. This is useful to manually run the compiler.
 
+## Lessons Learned
+
+- Dijkstra, Dijkstra, Dijkstra (day [16](day16), [18](day18), [20](day20))
+
 ## Previous Years
 
 My solutions to the previous challenges can be found here:
