@@ -59,17 +59,6 @@ struct CheatPolicy {
     picos: usize,
 }
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
-struct Skip {
-    positions: Vec<Vec2<i32>>,
-}
-
-impl Skip {
-    fn len(&self) -> usize {
-        self.positions.len()
-    }
-}
-
 impl Racetrack {
     fn height(&self) -> usize {
         self.rows.len()
@@ -114,7 +103,7 @@ impl Racetrack {
     }
 
     /// Traces out the racetrack, finding the distances to the given end.
-    fn find_skips_to_end(&self, start: Vec2<i32>, end: Vec2<i32>) -> HashMap<Vec2<i32>, Skip> {
+    fn find_distances_to_end(&self, start: Vec2<i32>, end: Vec2<i32>) -> HashMap<Vec2<i32>, usize> {
         let mut stack = Vec::new();
         let mut distances = HashMap::new();
 
@@ -128,7 +117,7 @@ impl Racetrack {
         }
         
         for (i, &pos) in stack.iter().enumerate() {
-            distances.insert(pos, Skip { positions: stack[(i + 1)..].iter().cloned().collect() });
+            distances.insert(pos, stack.len() - 1 - i);
         }
 
         distances
@@ -138,7 +127,8 @@ impl Racetrack {
     fn count_paths(&self, start: Vec2<i32>, end: Vec2<i32>, cheat_policy: CheatPolicy, condition: impl Fn(usize) -> bool) -> i32 {
         // Your (not quite) run-of-the-mill A* (Dijkstra + heuristic) implementation
 
-        let skips = self.find_skips_to_end(start, end);
+        let dists_to_end = self.find_distances_to_end(start, end);
+
         let mut queue = BinaryHeap::new();
         let mut visited = HashSet::new();
         let mut paths = 0;
@@ -178,7 +168,7 @@ impl Racetrack {
             for target in self.cheat_targets(node.pos, cheat_policy.picos) {
                 let cheat_picos = node.pos.manhattan_dist(target);
                 let new_cheat = Some(Cheat { start: node.pos, end: target, picos: cheat_picos });
-                let new_picos = node.picos + cheat_picos + skips[&target].len();
+                let new_picos = node.picos + cheat_picos + dists_to_end[&target];
                 let new_node = Node { pos: end, picos: new_picos, cost: new_picos, cheat: new_cheat };
                 offer_node!(new_node);
             }
@@ -218,8 +208,8 @@ fn main() {
     let start = track.locate('S').unwrap();
     let end = track.locate('E').unwrap();
 
-    let skips = track.find_skips_to_end(start, end);
-    let base_picos = skips[&start].len();
+    let dists_to_end = track.find_distances_to_end(start, end);
+    let base_picos = dists_to_end[&start];
 
     // track.count_paths(start, end, CheatPolicy { picos: 2 }, |picos| picos + 10 <= base_picos);
     // track.count_paths(start, end, CheatPolicy { picos: 20 }, |picos| picos + 50 <= base_picos);
