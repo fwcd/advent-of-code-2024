@@ -159,5 +159,12 @@
     },
     "path": "day20/src/day20.rs",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "scala",
+      "name": "Scala"
+    },
+    "path": "day21/src/day21.scala"
   }
 ]

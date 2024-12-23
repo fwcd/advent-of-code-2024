@@ -3,6 +3,7 @@
 *.swp
 .curry
 .metals
+.scala-build
 .fake
 
 out

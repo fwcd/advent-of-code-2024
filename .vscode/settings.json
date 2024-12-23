@@ -4,5 +4,8 @@
   },
   "files.readonlyInclude": {
     "README.md": true
+  },
+  "files.watcherExclude": {
+    "**/target": true
   }
 }
