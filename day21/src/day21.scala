@@ -27,6 +27,10 @@ val PAD_LAYOUTS = Map(
   )),
 )
 
+extension (ptype: PadType) {
+  def locate(c: Char) = PAD_LAYOUTS(ptype).find(_._2 == c).get._1
+}
+
 val DIRECTIONS = Map(
   ('<', Vec2(-1,  0)),
   ('>', Vec2( 1,  0)),
@@ -50,7 +54,7 @@ case class Pad(ptype: PadType, pos: Vec2) {
 }
 
 object Pad {
-  def apply(ptype: PadType): Pad = Pad(ptype, PAD_LAYOUTS(ptype).find(_._2 == 'A').get._1)
+  def apply(ptype: PadType): Pad = Pad(ptype, ptype.locate('A'))
 }
 
 case class State(pads: List[Pad] = List(), output: String = "") {
