@@ -78,10 +78,10 @@ def shortestProgram(startState: State, goal: String): String =
   queue.enqueue(start)
   visited.add(startState)
 
-  while (!queue.isEmpty) do
+  while !queue.isEmpty do
     val node = queue.dequeue()
     println(node)
-    if (node.state.output == goal) then
+    if node.state.output == goal then
       return node.program
 
     for action <- ACTIONS do
