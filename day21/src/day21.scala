@@ -72,11 +72,11 @@ case class State(pads: List[Pad] = List(), output: String = "") {
       State(newPads, newOutput)
 }
 
-case class Node(state: State = State(), programLength: Int = 0) extends Ordered[Node] {
-  def compare(that: Node): Int = that.programLength compare programLength // Intentionally reversed for min-heap
+case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
+  def compare(that: Node): Int = that.program.length compare program.length // Intentionally reversed for min-heap
 }
 
-def shortestProgramLength(startState: State, goal: String): Int =
+def shortestProgram(startState: State, goal: String): String =
   // Your run-of-the-mill Dijkstra implementation
 
   val queue = mutable.PriorityQueue[Node]()
@@ -89,7 +89,7 @@ def shortestProgramLength(startState: State, goal: String): Int =
   while !queue.isEmpty do
     val node = queue.dequeue()
     if node.state.output == goal then
-      return node.programLength
+      return node.program
 
     if node.state.output.length < goal.length then
       for
@@ -98,7 +98,7 @@ def shortestProgramLength(startState: State, goal: String): Int =
       do
         if !visited.contains(newState) then
           visited.add(newState)
-          queue.enqueue(Node(newState, node.programLength + 1))
+          queue.enqueue(Node(newState, node.program.appended(action)))
 
   throw new RuntimeException("No shortest program found")
 
@@ -109,7 +109,7 @@ def makeState(robots: Int) = State(makePads(robots))
 def solve(robots: Int, goals: List[String]): Int =
   val state = makeState(robots)
   goals.map { goal =>
-    val shortest = shortestProgramLength(state, goal)
+    val shortest = shortestProgram(state, goal).length
     shortest * goal.dropRight(1).toInt
   }.sum
 
@@ -118,5 +118,5 @@ def solve(robots: Int, goals: List[String]): Int =
   // println(s"Part 1: ${solve(2, goals)}")
   // println(s"Part 2: ${solve(25, goals)}")
 
-  for c <- ('0' to '9') do
-    println(s"$c -> ${(0 to 8).map { i => shortestProgramLength(makeState(i), s"$c") }}")
+  for c <- ('0' to '5') do
+    println(s"$c -> ${(0 to 3).map { i => shortestProgram(makeState(i), s"$c").length }}")
