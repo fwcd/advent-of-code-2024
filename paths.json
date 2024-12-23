@@ -157,6 +157,7 @@
       "codemirror": "rust",
       "name": "Rust"
     },
-    "path": "day20/src/day20.rs"
+    "path": "day20/src/day20.rs",
+    "completed": true
   }
 ]
