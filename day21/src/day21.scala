@@ -9,6 +9,8 @@ case class Vec2(x: Int, y: Int) {
   }
 
   def +(that: Vec2) = Vec2(x + that.x, y + that.y)
+
+  def manhattanDist(that: Vec2) = (x - that.x).abs + (y - that.y).abs
 }
 
 enum PadType:
@@ -114,7 +116,15 @@ def shortestProgramLength(robots: Int, goal: String): Int =
     def compare(that: Node): Int = that.total compare total // Intentionally reversed for min-heap
   }
 
-  def cost(robots: Int, pos: Vec2, dPos: Vec2, action: Char): (Int, Vec2) = (1, dPos)
+  def cost(robots: Int, pos: Vec2, dPos: Vec2, action: Char): (Int, Vec2) =
+    if robots <= 0 then
+      (1, dPos)
+    else
+      // Only considering robots = 1 for now
+      val targetDPos = PadType.Dir.locate(action)
+      val steps = dPos.manhattanDist(targetDPos) + 1 // needs 'A' press
+      // println(s"$dPos -> $targetDPos ('${PAD_LAYOUTS(PadType.Dir)(dPos)}' ${steps} -> '${PAD_LAYOUTS(PadType.Dir)(targetDPos)}')")
+      (steps, targetDPos)
 
   // Your run-of-the-mill Dijkstra implementation (this time on the numpad)
 
