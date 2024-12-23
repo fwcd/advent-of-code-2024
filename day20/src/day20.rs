@@ -175,7 +175,7 @@ impl Racetrack {
             assert!(node.cheat.is_none());
 
             // Explore cheating (and hopping straight to the end since we can't cheat afterwards)
-            for target in self.cheat_targets(node.pos, cheat_policy.picos.min(node.pos.manhattan_dist(end))) {
+            for target in self.cheat_targets(node.pos, cheat_policy.picos) {
                 let cheat_picos = node.pos.manhattan_dist(target);
                 let new_cheat = Some(Cheat { start: node.pos, end: target, picos: cheat_picos });
                 let new_picos = node.picos + cheat_picos + skips[&target].len();
