@@ -76,11 +76,11 @@ case class State(pads: List[Pad] = List(), output: String = "") {
       State(newPads, newOutput)
 }
 
-case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
-  def compare(that: Node): Int = that.program.length compare program.length // Intentionally reversed for min-heap
-}
-
 def shortestProgram(startState: State, goal: String): String =
+  case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
+    def compare(that: Node): Int = that.program.length compare program.length // Intentionally reversed for min-heap
+  }
+
   // Your run-of-the-mill Dijkstra implementation
 
   val queue = mutable.PriorityQueue[Node]()
