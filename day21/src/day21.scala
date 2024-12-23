@@ -18,8 +18,8 @@ val PAD_LAYOUTS = Map(
   (PadType.Num, Map(
     (Vec2(0, 0), '1'), (Vec2(1, 0), '2'), (Vec2(2, 0), '3'),
     (Vec2(0, 1), '4'), (Vec2(1, 1), '5'), (Vec2(2, 1), '6'),
-    (Vec2(0, 2), '7'), (Vec2(1, 2), '7'), (Vec2(2, 2), '8'),
-                       (Vec2(1, 3), '9'), (Vec2(2, 3), 'A'),
+    (Vec2(0, 2), '7'), (Vec2(1, 2), '8'), (Vec2(2, 2), '9'),
+                       (Vec2(1, 3), '0'), (Vec2(2, 3), 'A'),
   )),
   (PadType.Dir, Map(
                        (Vec2(1, 0), '^'), (Vec2(2, 0), 'A'),
@@ -73,7 +73,7 @@ case class State(pads: List[Pad] = List(), output: String = "") {
 }
 
 case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
-  def compare(that: Node): Int = program.length() compare that.program.length()
+  def compare(that: Node): Int = that.program.length() compare program.length() // Intentionally reversed for min-heap
 }
 
 def shortestProgram(startState: State, goal: String): String =
@@ -88,7 +88,6 @@ def shortestProgram(startState: State, goal: String): String =
 
   while !queue.isEmpty do
     val node = queue.dequeue()
-    println(node)
     if node.state.output == goal then
       return node.program
 
