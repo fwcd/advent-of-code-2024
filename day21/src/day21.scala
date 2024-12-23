@@ -47,7 +47,11 @@ case class Pad(ptype: PadType, pos: Vec2) {
       case _ => (None, Pad(ptype, pos + DIRECTIONS(action)))
 }
 
-case class State(pads: List[Pad], output: String) {
+object Pad {
+  def apply(ptype: PadType): Pad = Pad(ptype, PAD_LAYOUTS(ptype).find(_._2 == 'A').get._1)
+}
+
+case class State(pads: List[Pad] = List(), output: String = "") {
   def perform(action: Char) =
     val (newPads, outAction) = pads.foldLeft[(List[Pad], Option[Char])]((List(), Some(action))) { case ((pads, action), pad) =>
       action match
@@ -60,22 +64,23 @@ case class State(pads: List[Pad], output: String) {
     State(newPads, newOutput)
 }
 
-case class Node(state: State, program: String) extends Ordered[Node] {
+case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
   def compare(that: Node): Int = program.length() compare that.program.length()
 }
 
-def shortestProgram(goal: String): String =
+def shortestProgram(startState: State, goal: String): String =
   // Your run-of-the-mill Dijkstra implementation
 
   val queue = mutable.PriorityQueue[Node]()
   val visited = mutable.HashSet[State]()
 
-  val start = Node(State(List(), ""), "")
+  val start = Node(startState)
   queue.enqueue(start)
-  visited.add(start.state)
+  visited.add(startState)
 
   while (!queue.isEmpty) do
     val node = queue.dequeue()
+    println(node)
     if (node.state.output == goal) then
       return node.program
 
@@ -89,4 +94,9 @@ def shortestProgram(goal: String): String =
 
 @main def main(path: String) =
   val input = Source.fromFile(path).getLines.toList
-  println(s"$input")
+
+  for line <- input do
+    // val pads = List(Pad(PadType.Dir), Pad(PadType.Dir), Pad(PadType.Dir), Pad(PadType.Num))
+    val pads = List(Pad(PadType.Num))
+    val shortest = shortestProgram(State(pads), line)
+    println(s"$shortest")
