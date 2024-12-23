@@ -106,7 +106,6 @@ def shortestProgram(startState: State, goal: String): String =
   val input = Source.fromFile(path).getLines.toList
 
   for line <- input do
-    // val pads = List(Pad(PadType.Dir), Pad(PadType.Dir), Pad(PadType.Dir), Pad(PadType.Num))
-    val pads = List(Pad(PadType.Num))
+    val pads = List(PadType.Dir, PadType.Dir, PadType.Dir, PadType.Num).map(Pad(_))
     val shortest = shortestProgram(State(pads), line)
     println(s"$shortest")
