@@ -102,14 +102,21 @@ def shortestProgramLength(startState: State, goal: String): Int =
 
   throw new RuntimeException("No shortest program found")
 
+def makePads(robots: Int): List[Pad] = List.fill(robots)(Pad(PadType.Dir)) :+ Pad(PadType.Num)
+
+def makeState(robots: Int) = State(makePads(robots))
+
 def solve(robots: Int, goals: List[String]): Int =
-  val pads = List.fill(robots)(Pad(PadType.Dir)) :+ Pad(PadType.Num)
+  val state = makeState(robots)
   goals.map { goal =>
-    val shortest = shortestProgramLength(State(pads), goal)
+    val shortest = shortestProgramLength(state, goal)
     shortest * goal.dropRight(1).toInt
   }.sum
 
 @main def main(path: String) =
   val goals = Source.fromFile(path).getLines.toList
-  println(s"Part 1: ${solve(2, goals)}")
-  println(s"Part 2: ${solve(25, goals)}")
+  // println(s"Part 1: ${solve(2, goals)}")
+  // println(s"Part 2: ${solve(25, goals)}")
+
+  for c <- ('0' to '9') do
+    println(s"$c -> ${(0 to 8).map { i => shortestProgramLength(makeState(i), s"$c") }}")
