@@ -144,20 +144,11 @@ impl Racetrack {
 
         offer_node!(Node { pos: start, picos: 0, cost: 0, cheat: None });
 
-        let mut debug_counts: HashMap<usize, i32> = HashMap::new();
-
         while let Some(node) = queue.pop() {
             if node.pos == end {
                 if !condition(node.picos) {
                     break;
                 }
-                // println!("{}", node.picos);
-                // let debug_count = skips[&start].len() - node.cost;
-                // debug_counts.insert(debug_count, debug_counts.get(&debug_count).cloned().unwrap_or(0) + 1);
-                // let mut values = debug_counts.iter().collect::<Vec<_>>();
-                // values.sort_by_key(|v| v.0);
-                // println!("{:?}", values);
-                // println!("{debug_count}, {node:?}");
                 paths += 1;
                 continue;
             }
@@ -210,9 +201,6 @@ fn main() {
 
     let dists_to_end = track.find_distances_to_end(start, end);
     let base_picos = dists_to_end[&start];
-
-    // track.count_paths(start, end, CheatPolicy { picos: 2 }, |picos| picos + 10 <= base_picos);
-    // track.count_paths(start, end, CheatPolicy { picos: 20 }, |picos| picos + 50 <= base_picos);
 
     let part1 = track.count_paths(start, end, CheatPolicy { picos: 2 }, |picos| picos + 100 <= base_picos);
     println!("Part 1: {part1}");
