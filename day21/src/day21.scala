@@ -57,26 +57,26 @@ object Pad {
   def apply(ptype: PadType): Pad = Pad(ptype, ptype.locate('A'))
 }
 
-case class State(pads: List[Pad] = List(), output: String = "") {
-  def perform(action: Char) =
-    for
-      (newPads, outAction) <- pads.foldLeft[Option[(List[Pad], Option[Char])]](Some((List(), Some(action)))) { (acc, pad) =>
-        acc.flatMap { case (pads, action) =>
-          action match
-            case Some(action) =>
-              for
-                (newAction, newPad) <- Some(pad.perform(action))
-                if newPad.isValid
-              yield (pads :+ newPad, newAction)
-            case None => Some((pads :+ pad, None))
+def shortestProgram(robots: Int, goal: String): String =
+  case class State(pads: List[Pad] = List.fill(robots)(Pad(PadType.Dir)) :+ Pad(PadType.Num), output: String = "") {
+    def perform(action: Char) =
+      for
+        (newPads, outAction) <- pads.foldLeft[Option[(List[Pad], Option[Char])]](Some((List(), Some(action)))) { (acc, pad) =>
+          acc.flatMap { case (pads, action) =>
+            action match
+              case Some(action) =>
+                for
+                  (newAction, newPad) <- Some(pad.perform(action))
+                  if newPad.isValid
+                yield (pads :+ newPad, newAction)
+              case None => Some((pads :+ pad, None))
+          }
         }
-      }
-    yield
-      val newOutput = outAction.map(output.appended(_)).getOrElse(output)
-      State(newPads, newOutput)
-}
+      yield
+        val newOutput = outAction.map(output.appended(_)).getOrElse(output)
+        State(newPads, newOutput)
+  }
 
-def shortestProgram(startState: State, goal: String): String =
   case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
     def compare(that: Node): Int = that.program.length compare program.length // Intentionally reversed for min-heap
   }
@@ -86,6 +86,7 @@ def shortestProgram(startState: State, goal: String): String =
   val queue = mutable.PriorityQueue[Node]()
   val visited = mutable.HashSet[State]()
 
+  val startState = State()
   val start = Node(startState)
   queue.enqueue(start)
   visited.add(startState)
@@ -105,10 +106,6 @@ def shortestProgram(startState: State, goal: String): String =
           queue.enqueue(Node(newState, node.program.appended(action)))
 
   throw new RuntimeException("No shortest program found")
-
-def makePads(robots: Int): List[Pad] = List.fill(robots)(Pad(PadType.Dir)) :+ Pad(PadType.Num)
-
-def makeState(robots: Int) = State(makePads(robots))
 
 def cost(robots: Int, pos: Vec2, action: Char): Int = 1
 
@@ -157,7 +154,7 @@ def solve(robots: Int, goals: List[String], func: (Int, String) => Int): Int =
   // println(s"Part 2: ${solve(25, goals)}")
 
   for i <- (0 to 3) do
-    println(s"${solve(i, goals, { (r, g) => shortestProgram(makeState(r), g).length })} vs ${solve(i, goals, shortestProgramLength)}")
+    println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)}")
 
   // for c <- ('0' to '5') do
   //   println(s"$c -> ${(0 to 3).map { i => shortestProgram(makeState(i), s"$c").length }}")
