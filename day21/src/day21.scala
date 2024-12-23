@@ -72,11 +72,11 @@ case class State(pads: List[Pad] = List(), output: String = "") {
       State(newPads, newOutput)
 }
 
-case class Node(state: State = State(), program: String = "") extends Ordered[Node] {
-  def compare(that: Node): Int = that.program.length() compare program.length() // Intentionally reversed for min-heap
+case class Node(state: State = State(), programLength: Int = 0) extends Ordered[Node] {
+  def compare(that: Node): Int = that.programLength compare programLength // Intentionally reversed for min-heap
 }
 
-def shortestProgram(startState: State, goal: String): String =
+def shortestProgramLength(startState: State, goal: String): Int =
   // Your run-of-the-mill Dijkstra implementation
 
   val queue = mutable.PriorityQueue[Node]()
@@ -89,7 +89,7 @@ def shortestProgram(startState: State, goal: String): String =
   while !queue.isEmpty do
     val node = queue.dequeue()
     if node.state.output == goal then
-      return node.program
+      return node.programLength
 
     if node.state.output.length < goal.length then
       for
@@ -98,15 +98,15 @@ def shortestProgram(startState: State, goal: String): String =
       do
         if !visited.contains(newState) then
           visited.add(newState)
-          queue.enqueue(Node(newState, node.program.appended(action)))
+          queue.enqueue(Node(newState, node.programLength + 1))
 
   throw new RuntimeException("No shortest program found")
 
 def solve(robots: Int, goals: List[String]): Int =
   val pads = List.fill(robots)(Pad(PadType.Dir)) :+ Pad(PadType.Num)
   goals.map { goal =>
-    val shortest = shortestProgram(State(pads), goal)
-    shortest.length * goal.dropRight(1).toInt
+    val shortest = shortestProgramLength(State(pads), goal)
+    shortest * goal.dropRight(1).toInt
   }.sum
 
 @main def main(path: String) =
