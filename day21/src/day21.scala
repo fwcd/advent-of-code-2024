@@ -107,38 +107,41 @@ def shortestProgram(robots: Int, goal: String): String =
 
   throw new RuntimeException("No shortest program found")
 
-def cost(robots: Int, pos: Vec2, action: Char): Int = 1
-
 def shortestProgramLength(robots: Int, goal: String): Int =
-  case class Node(pos: Vec2, output: String = "", total: Int = 0) extends Ordered[Node] {
+  case class State(pos: Vec2 = PadType.Num.locate('A'), output: String = "")
+
+  case class Node(state: State, total: Int = 0) extends Ordered[Node] {
     def compare(that: Node): Int = that.total compare total // Intentionally reversed for min-heap
   }
+
+  def cost(state: State, newState: State, action: Char): Int = 1
 
   // Your run-of-the-mill Dijkstra implementation (this time on the numpad)
 
   val queue = mutable.PriorityQueue[Node]()
-  val visited = mutable.HashSet[(Vec2, String)]()
+  val visited = mutable.HashSet[State]()
 
-  val startPos = PadType.Num.locate('A')
-  val start = Node(startPos)
+  val startState = State()
+  val start = Node(startState)
   queue.enqueue(start)
-  visited.add((start.pos, start.output))
+  visited.add(startState)
 
   while !queue.isEmpty do
     val node = queue.dequeue()
-    if node.output == goal then
+    if node.state.output == goal then
       return node.total
 
-    if node.output.length < goal.length then
+    if node.state.output.length < goal.length then
       for
         action <- ACTIONS
       do
-        val newPos = node.pos + DIRECTIONS.get(action).getOrElse(Vec2(0, 0))
+        val newPos = node.state.pos + DIRECTIONS.get(action).getOrElse(Vec2(0, 0))
         if PAD_LAYOUTS(PadType.Num).contains(newPos) then
-          val newOutput = if action == 'A' then node.output.appended(PAD_LAYOUTS(PadType.Num)(node.pos)) else node.output
-          if !visited.contains((newPos, newOutput)) then
-            visited.add((newPos, newOutput))
-            queue.enqueue(Node(newPos, newOutput, node.total + cost(robots, node.pos, action)))
+          val newOutput = if action == 'A' then node.state.output.appended(PAD_LAYOUTS(PadType.Num)(node.state.pos)) else node.state.output
+          val newState = State(newPos, newOutput)
+          if !visited.contains(newState) then
+            visited.add(newState)
+            queue.enqueue(Node(newState, node.total + cost(node.state, newState, action)))
 
   throw new RuntimeException("No shortest program found")
 
