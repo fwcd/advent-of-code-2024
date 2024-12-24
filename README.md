@@ -29,6 +29,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 21**](day21): [Scala](day21/src/day21.scala)
 - [ ] [**Day 22**](day22): [Dart](day22/src/day22.dart)
 - [x] [**Day 23**](day23): [Go](day23/src/day23.go)
+- [ ] [**Day 24**](day24): [Crystal](day24/src/day24.cr)
 
 ## Development
 

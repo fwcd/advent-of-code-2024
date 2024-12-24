@@ -182,5 +182,12 @@
     },
     "path": "day23/src/day23.go",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "crystal",
+      "name": "Crystal"
+    },
+    "path": "day24/src/day24.cr"
   }
 ]
