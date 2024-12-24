@@ -18,6 +18,12 @@ def parse_input(raw : String) : Tuple(Vars, Circuit)
   {vars, circuit}
 end
 
+# This is a lot more complicated than it'd have to be. My hope was that using
+# the Z3 solver for part 1 (instead of just parsing and interpreting the graph
+# directly) would pay off in part 2, but as it turns out expressing the
+# additions as Z3 constraints would have been a fair bit more involved than just
+# scanning the connections for some simple rules (see `is_wrong`).
+
 def translate_to_z3(vars : Vars, circuit : Circuit) : String
   [
     *vars.map { |v| "(declare-const #{v[0]} (_ BitVec #{BITS}))" },
