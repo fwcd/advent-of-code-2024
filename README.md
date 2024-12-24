@@ -48,7 +48,7 @@ Every day is packaged up to take exactly one command-line argument, the input fi
 
 - Dijkstra, Dijkstra, Dijkstra (day [16](day16), [18](day18), [20](day20))
 - The [Lanternfish](https://adventofcode.com/2021/day/6)-style counting trick seems to be useful (day [11](day11), [21](day21))
-  - See e.g. also [this Reddit post](https://www.reddit.com/r/adventofcode/comments/1hbn15t/2024_day_11_is_this_a/)
+  - See e.g. also [this Reddit post](https://www.reddit.com/r/adventofcode/comments/1hbn15t/2024_day_11_is_this_a/) or [this one](https://www.reddit.com/r/adventofcode/comments/1hk3wwd/2024_day_21_history_repeats_itself/)
 
 ## Previous Years
 
