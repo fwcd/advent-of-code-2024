@@ -25,6 +25,11 @@ jobs:
         # https://github.com/fwcd/advent-of-code-2024/actions/runs/12476453049/job/34821297220
         - os: 'ubuntu-latest'
           day: '22'
+        # TODO: This currently requires building the Swift compiler from scratch on (arm64) macOS,
+        # so we'll disable it to save time
+        # https://github.com/fwcd/advent-of-code-2024/actions/runs/12486410752/job/34846445144
+        - os: 'macos-latest'
+          day: '25'
 
     steps:
     - uses: actions/checkout@v4
