@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+cd "$(dirname "$0")/.."
+
+for f in resources/*.txt; do
+  name=$(basename "${f%.txt}")
+  scripts/dotify "$f" | neato -Tpdf -o "generated/$name.pdf"
+done
