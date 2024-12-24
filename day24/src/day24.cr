@@ -3,6 +3,17 @@ BITS = 1
 alias Vars = Array(Array(String))
 alias Circuit = Array(Tuple(Array(String), String))
 
+def parse_input(raw : String) : Tuple(Vars, Circuit)
+  raw_vars, raw_circuit = raw.split("\n\n").map { |r| r.lines }
+  vars = raw_vars.map { |r| r.split(": ") }
+  circuit = raw_circuit.map do |r|
+    raw_expr, res = r.split(" -> ")
+    expr = raw_expr.split(' ')
+    {expr, res}
+  end
+  {vars, circuit}
+end
+
 def translate_to_z3(vars : Vars, circuit : Circuit) : String
   [
     *vars.map { |v| "(declare-const #{v[0]} (_ BitVec #{BITS}))" },
@@ -58,14 +69,7 @@ positionals = ARGV.select { |a| !flags.includes?(a) }
 
 path = positionals[0]
 raw = File.read(path)
-
-raw_vars, raw_circuit = raw.split("\n\n").map { |r| r.lines }
-vars = raw_vars.map { |r| r.split(": ") }
-circuit = raw_circuit.map do |r|
-  raw_expr, res = r.split(" -> ")
-  expr = raw_expr.split(' ')
-  {expr, res}
-end
+vars, circuit = parse_input(raw)
 
 if flags.includes?("--dump-dot")
   puts translate_to_dot(vars, circuit)
