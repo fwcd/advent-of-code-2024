@@ -49,13 +49,17 @@ elsif flags.includes?("--dump-z3")
   puts translate_to_z3(vars, circuit)
 else
   z3_src = translate_to_z3(vars, circuit)
+
   z3_proc = Process.new("z3", ["-smt2", "-in"], input: :pipe, output: :pipe)
   z3_proc.input.puts(z3_src)
-  z3_proc.input.close()
-  z3_output = z3_proc.output.gets_to_end().gsub("\n", "")
+  z3_proc.input.close
+
+  z3_output = z3_proc.output.gets_to_end.gsub("\n", "")
   output_vars = [] of Tuple(String, Int32)
   z3_output.scan(/\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+\d+\)\s+#[xb](\d+)\)/).each do |match|
     output_vars << {match[1], match[2].to_i}
   end
+  output_vars.sort!
+
   puts output_vars
 end
