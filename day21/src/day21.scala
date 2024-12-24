@@ -208,17 +208,19 @@ def shortestProgramLength(robots: Int, goal: String): Int =
 
   throw RuntimeException("No shortest program found")
 
-def solve(robots: Int, goals: List[String], func: (Int, String) => Int): Int =
+def solve(robots: Int, goals: List[String], func: (Int, String) => Long): Long =
   goals.map { goal =>
     val shortest = func(robots, goal)
-    shortest * goal.dropRight(1).toInt
+    shortest * goal.dropRight(1).toLong
   }.sum
 
-// Algorithm/approach inspired by https://www.reddit.com/r/adventofcode/comments/1hj2odw/comment/m36j01x
+// Algorithm/approach is effectively a Scala port of
+// https://www.reddit.com/r/adventofcode/comments/1hj2odw/comment/m36j01x For
+// some reason my Dijkstra-based shortest-path constructions didn't yield the
+// specific/right ordering, so I eventually just ended up using the hardcoded
+// map too. Most of the experiments can be found in earlier commits.
 
-val SHORTEST_PATHS = PadType.Num.shortestPaths ++ PadType.Dir.shortestPaths
-
-val SHORTEST_PATHS_2 = Map(
+val SHORTEST_PATHS = Map(
   (('A', '0'), "<A"),
   (('0', 'A'), ">A"),
   (('A', '1'), "^<<A"),
@@ -351,19 +353,26 @@ val SHORTEST_PATHS_2 = Map(
   (('A', '>'), "vA"),
 )
 
-def shortestProgramLengthClever(robots: Int, goal: String): Int =
-  // TODO: Memoize
-  if robots < 0 then
-    goal.length
+val memo = mutable.Map[(Int, String), Long]()
+
+def shortestProgramLengthClever(robots: Int, goal: String): Long =
+  val key = (robots, goal)
+  if memo.contains(key) then
+    return memo(key)
+
+  val result = if robots < 0 then
+    goal.length.toLong
   else
     var current = 'A'
-    var length = 0
+    var length = 0L
     for next <- goal do
       length += moveCount(robots, current, next)
       current = next
     length
+  memo(key) = result
+  result
 
-def moveCount(robots: Int, current: Char, next: Char): Int =
+def moveCount(robots: Int, current: Char, next: Char): Long =
   if current == next then
     1
   else
@@ -374,12 +383,15 @@ def moveCount(robots: Int, current: Char, next: Char): Int =
   // println(s"Part 1: ${solve(2, goals)}")
   // println(s"Part 2: ${solve(25, goals)}")
 
-  for (k, p) <- SHORTEST_PATHS.toList.sorted do
-    if k._1 != k._2 && p != SHORTEST_PATHS_2(k) then
-      println(s"(\"$p\", \"${SHORTEST_PATHS_2(k)}\")")
+  // for (k, p) <- SHORTEST_PATHS.toList.sorted do
+  //   if k._1 != k._2 && p != SHORTEST_PATHS_2(k) then
+  //     println(s"(\"$p\", \"${SHORTEST_PATHS_2(k)}\")")
 
-  for i <- (0 to 3) do
-    println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)} vs ${solve(i, goals, shortestProgramLengthClever)}")
+  println(s"Part 1: ${solve(2, goals, shortestProgramLengthClever)}")
+  println(s"Part 2: ${solve(25, goals, shortestProgramLengthClever)}")
+
+  // for i <- (0 to 3) do
+  //   println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)} vs ${solve(i, goals, shortestProgramLengthClever)}")
 
   // for c <- ('0' to '5') do
   //   println(s"$c -> ${(0 to 3).map { i => shortestProgram(makeState(i), s"$c").length }}")
