@@ -48,11 +48,14 @@ int score(List<int> input, int x1, int x2, int x3, int x4) {
 int findBestScore(List<int> input) {
   int bestScore = 0;
   int bound = 9;
-  for (var x1 = -bound; x1 <= bound; x1++) {
-    for (var x2 = -bound; x2 <= bound; x2++) {
+  for (int x1 = -bound; x1 <= bound; x1++) {
+    for (int x2 = -bound; x2 <= bound; x2++) {
+      if (x1 == x2) continue;
       print("Searching ($x1, $x2, ...)");
-      for (var x3 = -bound; x3 <= bound; x3++) {
-        for (var x4 = -bound; x4 <= bound; x4++) {
+      for (int x3 = -bound; x3 <= bound; x3++) {
+        if (x3 == x2 || x3 == x1) continue;
+        for (int x4 = -bound; x4 <= bound; x4++) {
+          if (x4 == x3 || x4 == x2 || x4 == x1) continue;
           int n = score(input, x1, x2, x3, x4);
           if (n > bestScore) {
             bestScore = n;
