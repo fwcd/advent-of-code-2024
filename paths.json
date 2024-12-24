@@ -165,6 +165,7 @@
       "codemirror": "scala",
       "name": "Scala"
     },
-    "path": "day21/src/day21.scala"
+    "path": "day21/src/day21.scala",
+    "completed": true
   }
 ]

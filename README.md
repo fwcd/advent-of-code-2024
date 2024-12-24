@@ -26,7 +26,7 @@ My solutions to the [Advent of Code 2024](https://adventofcode.com/2024), writte
 - [x] [**Day 18**](day18): [Java](day18/src/Day18.java)
 - [x] [**Day 19**](day19): [PyGyat](day19/src/day19.gyat)
 - [x] [**Day 20**](day20): [Rust](day20/src/day20.rs)
-- [ ] [**Day 21**](day21): [Scala](day21/src/day21.scala)
+- [x] [**Day 21**](day21): [Scala](day21/src/day21.scala)
 
 ## Development
 
