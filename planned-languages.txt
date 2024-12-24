@@ -1,3 +1,2 @@
-Swift
 Ruby
 F#

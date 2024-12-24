@@ -191,5 +191,12 @@
     },
     "path": "day24/src/day24.cr",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "swift",
+      "name": "Swift"
+    },
+    "path": "day25/src/day25.swift"
   }
 ]
