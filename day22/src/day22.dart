@@ -34,6 +34,9 @@ int monkey(int secret, int x1, int x2, int x3, int x4) {
   return -1;
 }
 
+int score(List<int> input, int x1, int x2, int x3, int x4) =>
+  input.map((n) => monkey(n, x1, x2, x3, x4)).where((n) => n >= 0).reduce((a, b) => a + b);
+
 Future<void> main(List<String> args) async {
   final raw = await File(args[0]).readAsString();
   final input = raw.split('\n').map((l) => l.trim()).where((l) => !l.isEmpty).map(int.parse).toList();
@@ -41,6 +44,6 @@ Future<void> main(List<String> args) async {
   final part1 = input.map((n) => prng(n, LIMIT)).reduce((a, b) => a + b);
   print("Part 1: $part1");
 
-  final part2 = monkey(2024, -2, 1, -1, 3);
+  final part2 = score(input, -2, 1, -1, 3);
   print("Part 2: $part2");
 }
