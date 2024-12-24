@@ -191,16 +191,35 @@ def solve(robots: Int, goals: List[String], func: (Int, String) => Int): Int =
     shortest * goal.dropRight(1).toInt
   }.sum
 
+// Algorithm/approach inspired by https://www.reddit.com/r/adventofcode/comments/1hj2odw/comment/m36j01x
+
+val SHORTEST_PATHS = PadType.Num.shortestPaths ++ PadType.Dir.shortestPaths
+
+def shortestProgramLengthClever(robots: Int, goal: String): Int =
+  // TODO: Memoize
+  if robots < 0 then
+    goal.length
+  else
+    var current = 'A'
+    var length = 0
+    for next <- goal do
+      length += moveCount(robots, current, next)
+      current = next
+    length
+
+def moveCount(robots: Int, current: Char, next: Char): Int =
+  if current == next then
+    1
+  else
+    shortestProgramLengthClever(robots - 1, SHORTEST_PATHS((current, next)))
+
 @main def main(path: String) =
   val goals = Source.fromFile(path).getLines.toList
   // println(s"Part 1: ${solve(2, goals)}")
   // println(s"Part 2: ${solve(25, goals)}")
 
-  println(PadType.Num.shortestPaths)
-  println(PadType.Dir.shortestPaths)
-
-  // for i <- (0 to 3) do
-  //   println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)}")
+  for i <- (0 to 3) do
+    println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)} vs ${solve(i, goals, shortestProgramLengthClever)}")
 
   // for c <- ('0' to '5') do
   //   println(s"$c -> ${(0 to 3).map { i => shortestProgram(makeState(i), s"$c").length }}")
