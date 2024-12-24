@@ -180,6 +180,7 @@
       "codemirror": "go",
       "name": "Go"
     },
-    "path": "day23/src/day23.go"
+    "path": "day23/src/day23.go",
+    "completed": true
   }
 ]
