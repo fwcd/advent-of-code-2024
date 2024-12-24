@@ -54,6 +54,7 @@ int score(std::vector<int> input, int x1, int x2, int x3, int x4) {
 int findBestScore(std::vector<int> input) {
   int bestScore = 0;
   int bound = 9;
+  #pragma omp parallel for
   for (int x1 = -bound; x1 <= bound; x1++) {
     for (int x2 = -bound; x2 <= bound; x2++) {
       std::cout << "Searching (" << x1 << ", " << x2 << ")" << std::endl;
