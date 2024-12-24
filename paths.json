@@ -167,5 +167,12 @@
     },
     "path": "day21/src/day21.scala",
     "completed": true
+  },
+  {
+    "lang": {
+      "codemirror": "dart",
+      "name": "Dart"
+    },
+    "path": "day22/src/day22.dart"
   }
 ]

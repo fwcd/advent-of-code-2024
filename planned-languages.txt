@@ -1,5 +1,4 @@
 Swift
-Dart
 Ruby
 Crystal
 Go
