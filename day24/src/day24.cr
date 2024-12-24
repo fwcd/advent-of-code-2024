@@ -53,6 +53,17 @@ def solve(z3_src : String) : Array(Tuple(String, Int64))
   output_vars
 end
 
+def swap(i : Int, j : Int, circuit : Circuit) : Circuit
+  new_circuit = [*circuit]
+  new_circuit[i] = {circuit[i][0], circuit[j][1]}
+  new_circuit[j] = {circuit[j][0], circuit[i][1]}
+  new_circuit
+end
+
+def hamming_dist(n : Int64, m : Int64) : Int64
+  (n ^ m).popcount
+end
+
 def extract_int(prefix : String, values : Array(Tuple(String, Int64))) : Int
   values
     .select { |v| v[0].starts_with?(prefix) }
@@ -78,7 +89,21 @@ if flags.includes?("--dump-dot")
 elsif flags.includes?("--dump-z3")
   puts translate_to_z3(vars, circuit)
 else
-  z3_src = translate_to_z3(vars, circuit)
-  part1 = extract_int("z", solve(z3_src))
+  part1 = extract_int("z", solve(translate_to_z3(vars, circuit)))
   puts "Part 1: #{part1}"
+
+  circuit = swap(3, 4, circuit)
+  output_vars = solve(translate_to_z3(vars, circuit))
+  x = extract_int("x", output_vars)
+  y = extract_int("y", output_vars)
+  z = extract_int("z", output_vars)
+  puts "z: #{z.to_s(16)}, x + y: #{(x + y).to_s(16)}, hdist: #{hamming_dist(x + y, z)}"
+
+  # (0...vars.size).each do |i|
+  #   output_vars = solve(translate_to_z3(vars, [*circuit[..(i - 1)], *circuit[(i + 1)..]]))
+  #   x = extract_int("x", output_vars)
+  #   y = extract_int("y", output_vars)
+  #   z = extract_int("z", output_vars)
+  #   puts "i = #{i} -> x: #{x}, y: #{y}, z: #{z}, x + y: #{x + y}"
+  # end
 end
