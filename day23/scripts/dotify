@@ -4,6 +4,7 @@ import fileinput
 import re
 
 print('graph {')
+print('  scale=20;')
 
 for line in fileinput.input():
   print(f"  {line.strip().replace('-', ' -- ')};")
