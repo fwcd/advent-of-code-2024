@@ -1,6 +1,4 @@
-Rust
 Swift
-Scala
 Dart
 Ruby
 Crystal
