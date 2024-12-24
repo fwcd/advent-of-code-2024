@@ -20,7 +20,7 @@ int prng(int secret, int n) {
   return secret;
 }
 
-int monkey(int secret, int x1, int x2, int x3, int x4) {
+int? monkey(int secret, int x1, int x2, int x3, int x4) {
   int? d1 = null, d2 = null, d3 = null, d4 = null;
   for (var i = 0; i < LIMIT; i++) {
     int lastPrice = secret % 10;
@@ -31,14 +31,14 @@ int monkey(int secret, int x1, int x2, int x3, int x4) {
       return price;
     }
   }
-  return -1;
+  return null;
 }
 
 int score(List<int> input, int x1, int x2, int x3, int x4) {
   int sum = 0;
   for (int n in input) {
-    int price = monkey(n, x1, x2, x3, x4);
-    if (price > 0) {
+    int? price = monkey(n, x1, x2, x3, x4);
+    if (price != null) {
       sum += price;
     }
   }

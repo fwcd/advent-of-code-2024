@@ -25,7 +25,7 @@ int64_t prng(int64_t secret, int64_t n) {
   return secret;
 }
 
-int64_t monkey(int64_t secret, int64_t x1, int64_t x2, int64_t x3, int64_t x4) {
+std::optional<int64_t> monkey(int64_t secret, int64_t x1, int64_t x2, int64_t x3, int64_t x4) {
   std::optional<int64_t> d1, d2, d3, d4;
   for (int64_t i = 0; i < LIMIT; i++) {
     int64_t lastPrice = secret % 10;
@@ -39,15 +39,15 @@ int64_t monkey(int64_t secret, int64_t x1, int64_t x2, int64_t x3, int64_t x4) {
       return price;
     }
   }
-  return -1;
+  return std::nullopt;
 }
 
 int64_t score(std::vector<int64_t> input, int64_t x1, int64_t x2, int64_t x3, int64_t x4) {
   int64_t sum = 0;
   for (int64_t n : input) {
-    int64_t price = monkey(n, x1, x2, x3, x4);
-    if (price > 0) {
-      sum += price;
+    std::optional<int64_t> price = monkey(n, x1, x2, x3, x4);
+    if (price.has_value()) {
+      sum += *price;
     }
   }
   return sum;
