@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <iostream>
 #include <fstream>
+#include <optional>
 #include <vector>
 
 const int64_t LIMIT = 2000;
@@ -25,7 +26,7 @@ int64_t prng(int64_t secret, int64_t n) {
 }
 
 int64_t monkey(int64_t secret, int64_t x1, int64_t x2, int64_t x3, int64_t x4) {
-  int64_t d1 = -1, d2 = -1, d3 = -1, d4 = -1;
+  std::optional<int64_t> d1, d2, d3, d4;
   for (int64_t i = 0; i < LIMIT; i++) {
     int64_t lastPrice = secret % 10;
     secret = next(secret);

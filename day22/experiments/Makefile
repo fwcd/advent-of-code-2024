@@ -8,4 +8,4 @@ out:
 	mkdir -p $@
 
 out/day22: ./day22.cpp | out
-	$(CXX) $< -ffast-math -fopenmp -O3 -std=c++11 -o $@
+	$(CXX) $< -ffast-math -fopenmp -O3 -std=c++20 -o $@

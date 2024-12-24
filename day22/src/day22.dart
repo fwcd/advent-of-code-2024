@@ -21,7 +21,7 @@ int prng(int secret, int n) {
 }
 
 int monkey(int secret, int x1, int x2, int x3, int x4) {
-  int d1 = -1, d2 = -1, d3 = -1, d4 = -1;
+  int? d1 = null, d2 = null, d3 = null, d4 = null;
   for (var i = 0; i < LIMIT; i++) {
     int lastPrice = secret % 10;
     secret = next(secret);
