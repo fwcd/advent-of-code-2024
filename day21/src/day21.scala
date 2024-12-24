@@ -36,7 +36,9 @@ extension (ptype: PadType) {
 
   def shortestPath(startPos: Vec2, endPos: Vec2): String =
     case class Node(pos: Vec2, program: String = "") extends Ordered[Node] {
-      def compare(that: Node): Int = that.program.length compare program.length // Intentionally reversed for min-heap
+      def cost = program.length - "^^+|vv+|<<+|>>+".r.findAllMatchIn(program).length
+
+      def compare(that: Node): Int = that.cost compare cost // Intentionally reversed for min-heap
     }
 
     val queue = mutable.PriorityQueue[Node]()
@@ -217,6 +219,8 @@ def moveCount(robots: Int, current: Char, next: Char): Int =
   val goals = Source.fromFile(path).getLines.toList
   // println(s"Part 1: ${solve(2, goals)}")
   // println(s"Part 2: ${solve(25, goals)}")
+
+  println(SHORTEST_PATHS)
 
   for i <- (0 to 3) do
     println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)} vs ${solve(i, goals, shortestProgramLengthClever)}")
