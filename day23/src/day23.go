@@ -26,7 +26,6 @@ func threeCliques(graph Graph, prefix string) int {
 				if es1[n2] && es1[n3] && es2[n1] && es2[n3] && es3[n1] && es3[n2] {
 					// We have a 3-clique
 					if strings.HasPrefix(n1, prefix) || strings.HasPrefix(n2, prefix) || strings.HasPrefix(n3, prefix) {
-						fmt.Println(n1, n2, n3)
 						cliques++
 					}
 				}
@@ -66,7 +65,5 @@ func main() {
 			addEdge(graph, split[1], split[0])
 		}
 	}
-	fmt.Println(graph)
-
 	fmt.Println("Part 1:", threeCliques(graph, "t"))
 }
