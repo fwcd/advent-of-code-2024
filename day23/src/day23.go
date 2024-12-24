@@ -66,4 +66,10 @@ func main() {
 		}
 	}
 	fmt.Println("Part 1:", threeCliques(graph, "t"))
+
+	// Part 2 was solved by inspecting the output in GraphViz:
+	//
+	//     scripts/dotify resources/input.txt | neato -Tpdf -o <path/to/output.pdf>
+	//
+	// The clique can be found at the very top.
 }
