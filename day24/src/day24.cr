@@ -55,11 +55,16 @@ else
   z3_proc.input.close
 
   z3_output = z3_proc.output.gets_to_end.gsub("\n", "")
-  output_vars = [] of Tuple(String, Int32)
+  output_vars = [] of Tuple(String, Int64)
   z3_output.scan(/\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+\d+\)\s+#[xb](\d+)\)/).each do |match|
-    output_vars << {match[1], match[2].to_i}
+    output_vars << {match[1], match[2].to_i64}
   end
   output_vars.sort!
 
-  puts output_vars
+  part1 = output_vars
+    .select { |v| v[0].starts_with?('z') }
+    .map { |v| v[1] }
+    .reverse
+    .reduce(0_i64) { |acc, b| (acc << 1) | b }
+  puts "Part 1: #{part1}"
 end
