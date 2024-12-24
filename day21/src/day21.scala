@@ -30,7 +30,36 @@ val PAD_LAYOUTS = Map(
 )
 
 extension (ptype: PadType) {
-  def locate(c: Char) = PAD_LAYOUTS(ptype).find(_._2 == c).get._1
+  def layout = PAD_LAYOUTS(ptype)
+
+  def locate(c: Char) = ptype.layout.find(_._2 == c).get._1
+
+  def shortestPath(startPos: Vec2, endPos: Vec2): String =
+    case class Node(pos: Vec2, program: String = "") extends Ordered[Node] {
+      def compare(that: Node): Int = that.program.length compare program.length // Intentionally reversed for min-heap
+    }
+
+    val queue = mutable.PriorityQueue[Node]()
+    val visited = mutable.Set[Vec2]()
+
+    queue.enqueue(Node(startPos))
+    visited.add(startPos)
+
+    while !queue.isEmpty do
+      val node = queue.dequeue()
+      if node.pos == endPos then
+        return node.program.appended('A')
+      
+      for (action, dir) <- DIRECTIONS do
+        val neigh = node.pos + dir
+        if layout.contains(neigh) && !visited.contains(neigh) then
+          visited.add(neigh)
+          queue.enqueue(Node(neigh, node.program.appended(action)))
+      
+    throw RuntimeException("No shortest program found")
+  
+  def shortestPaths: Map[(Char, Char), String] =
+    layout.flatMap { case (p1, a1) => layout.map { case (p2, a2) => ((a1, a2), shortestPath(p1, p2)) } }.toMap
 }
 
 val DIRECTIONS = Map(
@@ -43,7 +72,7 @@ val DIRECTIONS = Map(
 val ACTIONS = List('A') ++ DIRECTIONS.keySet
 
 case class Pad(ptype: PadType, pos: Vec2) {
-  def layout = PAD_LAYOUTS(ptype)
+  def layout = ptype.layout
 
   def activate: Char = layout(pos)
 
@@ -86,7 +115,7 @@ def shortestProgram(robots: Int, goal: String): String =
   // Your run-of-the-mill Dijkstra implementation
 
   val queue = mutable.PriorityQueue[Node]()
-  val visited = mutable.HashSet[State]()
+  val visited = mutable.Set[State]()
 
   val startState = State()
   val start = Node(startState)
@@ -107,7 +136,7 @@ def shortestProgram(robots: Int, goal: String): String =
           visited.add(newState)
           queue.enqueue(Node(newState, node.program.appended(action)))
 
-  throw new RuntimeException("No shortest program found")
+  throw RuntimeException("No shortest program found")
 
 def shortestProgramLength(robots: Int, goal: String): Int =
   case class State(pos: Vec2 = PadType.Num.locate('A'), dPos: Vec2 = PadType.Dir.locate('A'), output: String = "")
@@ -129,7 +158,7 @@ def shortestProgramLength(robots: Int, goal: String): Int =
   // Your run-of-the-mill Dijkstra implementation (this time on the numpad)
 
   val queue = mutable.PriorityQueue[Node]()
-  val visited = mutable.HashSet[State]()
+  val visited = mutable.Set[State]()
 
   val startState = State()
   val start = Node(startState)
@@ -154,7 +183,7 @@ def shortestProgramLength(robots: Int, goal: String): Int =
             visited.add(newState)
             queue.enqueue(Node(newState, node.total + c))
 
-  throw new RuntimeException("No shortest program found")
+  throw RuntimeException("No shortest program found")
 
 def solve(robots: Int, goals: List[String], func: (Int, String) => Int): Int =
   goals.map { goal =>
@@ -167,8 +196,11 @@ def solve(robots: Int, goals: List[String], func: (Int, String) => Int): Int =
   // println(s"Part 1: ${solve(2, goals)}")
   // println(s"Part 2: ${solve(25, goals)}")
 
-  for i <- (0 to 3) do
-    println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)}")
+  println(PadType.Num.shortestPaths)
+  println(PadType.Dir.shortestPaths)
+
+  // for i <- (0 to 3) do
+  //   println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)}")
 
   // for c <- ('0' to '5') do
   //   println(s"$c -> ${(0 to 3).map { i => shortestProgram(makeState(i), s"$c").length }}")
