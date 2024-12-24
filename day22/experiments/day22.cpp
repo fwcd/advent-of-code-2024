@@ -4,10 +4,10 @@
 #include <fstream>
 #include <vector>
 
-const uint64_t LIMIT = 2000;
+const int64_t LIMIT = 2000;
 
-uint64_t next(uint64_t secret) {
-  uint64_t mask = 16777215; // = 2^24 - 1
+int64_t next(int64_t secret) {
+  int64_t mask = 16777215; // = 2^24 - 1
   secret ^= secret << 6;
   secret &= mask;
   secret ^= secret >> 5;
@@ -17,19 +17,19 @@ uint64_t next(uint64_t secret) {
   return secret;
 }
 
-uint64_t prng(uint64_t secret, uint64_t n) {
-  for (uint64_t i = 0; i < n; i++) {
+int64_t prng(int64_t secret, int64_t n) {
+  for (int64_t i = 0; i < n; i++) {
     secret = next(secret);
   }
   return secret;
 }
 
-uint64_t monkey(uint64_t secret, uint64_t x1, uint64_t x2, uint64_t x3, uint64_t x4) {
-  uint64_t d1 = -1, d2 = -1, d3 = -1, d4 = -1;
-  for (uint64_t i = 0; i < LIMIT; i++) {
-    uint64_t lastPrice = secret % 10;
+int64_t monkey(int64_t secret, int64_t x1, int64_t x2, int64_t x3, int64_t x4) {
+  int64_t d1 = -1, d2 = -1, d3 = -1, d4 = -1;
+  for (int64_t i = 0; i < LIMIT; i++) {
+    int64_t lastPrice = secret % 10;
     secret = next(secret);
-    uint64_t price = secret % 10;
+    int64_t price = secret % 10;
     d1 = d2;
     d2 = d3;
     d3 = d4;
@@ -41,10 +41,10 @@ uint64_t monkey(uint64_t secret, uint64_t x1, uint64_t x2, uint64_t x3, uint64_t
   return -1;
 }
 
-uint64_t score(std::vector<uint64_t> input, uint64_t x1, uint64_t x2, uint64_t x3, uint64_t x4) {
-  uint64_t sum = 0;
-  for (uint64_t n : input) {
-    uint64_t price = monkey(n, x1, x2, x3, x4);
+int64_t score(std::vector<int64_t> input, int64_t x1, int64_t x2, int64_t x3, int64_t x4) {
+  int64_t sum = 0;
+  for (int64_t n : input) {
+    int64_t price = monkey(n, x1, x2, x3, x4);
     if (price > 0) {
       sum += price;
     }
@@ -52,16 +52,16 @@ uint64_t score(std::vector<uint64_t> input, uint64_t x1, uint64_t x2, uint64_t x
   return sum;
 }
 
-uint64_t findBestScore(std::vector<uint64_t> input) {
-  uint64_t bestScore = 0;
-  uint64_t bound = 9;
-  #pragma omp parallel for
-  for (uint64_t x1 = -bound; x1 <= bound; x1++) {
-    for (uint64_t x2 = -bound; x2 <= bound; x2++) {
+int64_t findBestScore(std::vector<int64_t> input) {
+  int64_t bestScore = 0;
+  int64_t bound = 9;
+  for (int64_t x1 = -bound; x1 <= bound; x1++) {
+    for (int64_t x2 = -bound; x2 <= bound; x2++) {
       std::cout << "Searching (" << x1 << ", " << x2 << ")" << std::endl;
-      for (uint64_t x3 = -bound; x3 <= bound; x3++) {
-        for (uint64_t x4 = -bound; x4 <= bound; x4++) {
-          uint64_t n = score(input, x1, x2, x3, x4);
+      #pragma omp parallel for
+      for (int64_t x3 = -bound; x3 <= bound; x3++) {
+        for (int64_t x4 = -bound; x4 <= bound; x4++) {
+          int64_t n = score(input, x1, x2, x3, x4);
           if (n > bestScore) {
             bestScore = n;
           }
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  std::vector<uint64_t> input;
+  std::vector<int64_t> input;
 
   {
     std::ifstream file;
@@ -88,13 +88,13 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  uint64_t part1 = 0;
-  for (uint64_t n : input) {
+  int64_t part1 = 0;
+  for (int64_t n : input) {
     part1 += prng(n, LIMIT);
   }
   std::cout << "Part 1: " << part1 << std::endl;
 
-  uint64_t part2 = findBestScore(input);
+  int64_t part2 = findBestScore(input);
   std::cout << "Part 2: " << part2 << std::endl;
 
   return 0;
