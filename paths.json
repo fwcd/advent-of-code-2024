@@ -174,5 +174,12 @@
       "name": "Dart"
     },
     "path": "day22/src/day22.dart"
+  },
+  {
+    "lang": {
+      "codemirror": "go",
+      "name": "Go"
+    },
+    "path": "day23/src/day23.go"
   }
 ]
