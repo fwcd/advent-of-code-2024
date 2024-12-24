@@ -81,15 +81,18 @@ def is_coord(s : String) : Bool
   is_x(s) || is_y(s) || is_z(s)
 end
 
-def is_wrong(expr : Array(String), res : String) : Bool
+def is_wrong(conn : Tuple(Array(String), String), circuit : Circuit) : Bool
+  expr, res = conn
   lhs, op, rhs = expr
-  xor_gate = op == "XOR"
-  or_gate = op == "OR"
-  and_gate = op == "AND"
+  childs = circuit.select { |c| c[0].includes?(res) }
   
   [
-    xor_gate && !is_coord(lhs) && !is_coord(rhs) && !is_coord(res),
-    !xor_gate && is_z(res) && res != "z45",
+    op == "XOR" && !is_coord(lhs) && !is_coord(rhs) && !is_coord(res),
+    op != "XOR" && is_z(res) && res != "z45",
+    childs.map do |c| 
+      child_op = c[0][1]
+      (op == "AND" && ![lhs, rhs].includes?("x00") && child_op != "OR") || (op == "XOR" && child_op == "OR")
+    end.any?
   ].any?
 end
 
@@ -114,8 +117,9 @@ else
   puts "Part 1: #{part1}"
 
   part2 = circuit
-    .select { |c| is_wrong(c[0], c[1]) }
+    .select { |c| is_wrong(c, circuit) }
     .map { |c| c[1] }
+    .sort
     .join(",")
   puts "Part 2: #{part2}"
 end
