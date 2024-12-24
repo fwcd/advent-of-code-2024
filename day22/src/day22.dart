@@ -35,7 +35,25 @@ int monkey(int secret, int x1, int x2, int x3, int x4) {
 }
 
 int score(List<int> input, int x1, int x2, int x3, int x4) =>
-  input.map((n) => monkey(n, x1, x2, x3, x4)).where((n) => n >= 0).reduce((a, b) => a + b);
+  input.map((n) => monkey(n, x1, x2, x3, x4)).where((n) => n >= 0).fold(0, (a, b) => a + b);
+
+int findBestScore(List<int> input) {
+  int bestScore = 0;
+  int bound = 9;
+  for (var x1 = -bound; x1 <= bound; x1++) {
+    for (var x2 = -bound; x2 <= bound; x2++) {
+      for (var x3 = -bound; x3 <= bound; x3++) {
+        for (var x4 = -bound; x4 <= bound; x4++) {
+          int n = score(input, x1, x2, x3, x4);
+          if (n > bestScore) {
+            bestScore = n;
+          }
+        }
+      }
+    }
+  }
+  return bestScore;
+}
 
 Future<void> main(List<String> args) async {
   final raw = await File(args[0]).readAsString();
@@ -44,6 +62,6 @@ Future<void> main(List<String> args) async {
   final part1 = input.map((n) => prng(n, LIMIT)).reduce((a, b) => a + b);
   print("Part 1: $part1");
 
-  final part2 = score(input, -2, 1, -1, 3);
+  final part2 = findBestScore(input);
   print("Part 2: $part2");
 }
