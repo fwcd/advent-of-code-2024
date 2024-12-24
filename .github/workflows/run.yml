@@ -21,6 +21,10 @@ jobs:
         # https://github.com/fwcd/advent-of-code-2024/actions/runs/12301122542/job/34330958377
         - os: 'ubuntu-latest'
           day: '12'
+        # TODO: Something's wrong with Dart on Linux
+        # https://github.com/fwcd/advent-of-code-2024/actions/runs/12476453049/job/34821297220
+        - os: 'ubuntu-latest'
+          day: '22'
 
     steps:
     - uses: actions/checkout@v4
