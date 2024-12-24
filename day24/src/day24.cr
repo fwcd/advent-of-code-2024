@@ -38,9 +38,7 @@ def translate_to_dot(vars : Vars, circuit : Circuit) : String
   ].join("\n")
 end
 
-def solve(vars : Vars, circuit : Circuit) : Int
-  z3_src = translate_to_z3(vars, circuit)
-
+def solve(z3_src : String) : Array(Tuple(String, Int64))
   z3_proc = Process.new("z3", ["-smt2", "-in"], input: :pipe, output: :pipe)
   z3_proc.input.puts(z3_src)
   z3_proc.input.close
@@ -53,7 +51,11 @@ def solve(vars : Vars, circuit : Circuit) : Int
   output_vars.sort!
 
   output_vars
-    .select { |v| v[0].starts_with?('z') }
+end
+
+def extract_int(prefix : String, values : Array(Tuple(String, Int64))) : Int
+  values
+    .select { |v| v[0].starts_with?(prefix) }
     .map { |v| v[1] }
     .reverse
     .reduce(0_i64) { |acc, b| (acc << 1) | b }
@@ -76,6 +78,7 @@ if flags.includes?("--dump-dot")
 elsif flags.includes?("--dump-z3")
   puts translate_to_z3(vars, circuit)
 else
-  part1 = solve(vars, circuit)
+  z3_src = translate_to_z3(vars, circuit)
+  part1 = extract_int("z", solve(z3_src))
   puts "Part 1: #{part1}"
 end
