@@ -189,6 +189,7 @@
       "codemirror": "crystal",
       "name": "Crystal"
     },
-    "path": "day24/src/day24.cr"
+    "path": "day24/src/day24.cr",
+    "completed": true
   }
 ]
