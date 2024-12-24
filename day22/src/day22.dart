@@ -45,6 +45,10 @@ int score(List<int> input, int x1, int x2, int x3, int x4) {
   return sum;
 }
 
+// TODO: Solve this in a more clever way, by iterating each buyer's possible
+// keys (sliding window) and tracking in a map the first value for each key.
+// Then merge the maps for each buyer by taking the max values.
+
 int findBestScore(List<int> input) {
   int bestScore = 0;
   int bound = 9;
