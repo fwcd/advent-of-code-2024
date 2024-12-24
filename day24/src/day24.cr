@@ -1,9 +1,13 @@
-BITS = 64
+BITS = 1
 
 def translate_to_z3(vars, circuit) : String
   [
     *vars.map { |v| "(declare-const #{v[0]} (_ BitVec #{BITS}))" },
-    *vars.map { |v| "(assert (= #{v[0]} #{v[1]}))" },
+    *circuit.map { |c| "(declare-const #{c[1]} (_ BitVec #{BITS}))" },
+    *vars.map { |v| "(assert (= #{v[0]} ((_ int2bv #{BITS}) #{v[1]})))" },
+    *circuit.map { |c| "(assert (= #{c[1]} (bv#{c[0][1].downcase} #{c[0][0]} #{c[0][2]})))" },
+    "(check-sat)",
+    "(get-model)",
   ].join("\n")
 end
 
