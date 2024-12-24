@@ -4,6 +4,14 @@ if ARGV.size == 0
 end
 
 path = ARGV[0]
-lines = File.read_lines(path)
+raw = File.read(path)
 
-puts "Lines: #{lines}"
+raw_vars, raw_circuit = raw.split("\n\n").map { |r| r.lines }
+vars = raw_vars.map { |r| r.split(": ") }
+circuit = raw_circuit.map do |r|
+  raw_expr, res = r.split(" -> ")
+  expr = raw_expr.split(' ')
+  [expr, res]
+end
+
+puts "Vars: #{vars}, circuit: #{circuit}"
