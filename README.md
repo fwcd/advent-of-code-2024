@@ -54,6 +54,7 @@ Every day is packaged up to take exactly one command-line argument, the input fi
   - See e.g. also [this Reddit post](https://www.reddit.com/r/adventofcode/comments/1hbn15t/2024_day_11_is_this_a/) or [this one](https://www.reddit.com/r/adventofcode/comments/1hk3wwd/2024_day_21_history_repeats_itself/)
 - Plot graph-like inputs with GraphViz (day [23](day23), [24](day24))
   - In some cases, the solution is visually apparent in the plot (23.2)
+- Use bigger ints, ideally at least 64-bits (day [17](day17), [21](day21), [24](day24))
 
 ## Previous Years
 
