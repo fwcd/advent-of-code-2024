@@ -19,5 +19,12 @@ func main() {
 	}
 
 	input := strings.Split(string(data), "\n")
-	fmt.Println(input)
+	graph := make(map[string][]string)
+	for _, line := range input {
+		split := strings.Split(line, "-")
+		if len(split) >= 2 {
+			graph[split[0]] = append(graph[split[0]], split[1])
+		}
+	}
+	fmt.Println(graph)
 }
