@@ -173,7 +173,8 @@
       "codemirror": "dart",
       "name": "Dart"
     },
-    "path": "day22/src/day22.dart"
+    "path": "day22/src/day22.dart",
+    "completed": true
   },
   {
     "lang": {
