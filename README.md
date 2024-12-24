@@ -52,7 +52,8 @@ Every day is packaged up to take exactly one command-line argument, the input fi
 - Dijkstra, Dijkstra, Dijkstra (day [16](day16), [18](day18), [20](day20))
 - The [Lanternfish](https://adventofcode.com/2021/day/6)-style counting trick seems to be useful (day [11](day11), [21](day21))
   - See e.g. also [this Reddit post](https://www.reddit.com/r/adventofcode/comments/1hbn15t/2024_day_11_is_this_a/) or [this one](https://www.reddit.com/r/adventofcode/comments/1hk3wwd/2024_day_21_history_repeats_itself/)
-- Plot graph-like inputs with GraphViz, you may even find the solution visually (day [23](day23))
+- Plot graph-like inputs with GraphViz (day [23](day23), [24](day24))
+  - In some cases, the solution is visually apparent in the plot (23.2)
 
 ## Previous Years
 
