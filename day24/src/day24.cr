@@ -53,7 +53,9 @@ else
   z3_proc.input.puts(z3_src)
   z3_proc.input.close()
   z3_output = z3_proc.output.gets_to_end().gsub("\n", "")
+  output_vars = [] of Tuple(String, Int32)
   z3_output.scan(/\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+\d+\)\s+#[xb](\d+)\)/).each do |match|
-    puts "#{match[1]} -> #{match[2]}"
+    output_vars << {match[1], match[2].to_i}
   end
+  puts output_vars
 end
