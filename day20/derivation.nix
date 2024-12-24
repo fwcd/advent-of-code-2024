@@ -1,6 +1,6 @@
 { stdenv, cargo }:
   stdenv.mkDerivation {
-    name = "advent-of-code-2023-day20";
+    name = "advent-of-code-2024-day20";
     src = ./.;
 
     nativeBuildInputs = [
