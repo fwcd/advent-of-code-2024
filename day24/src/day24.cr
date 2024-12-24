@@ -27,6 +27,27 @@ def translate_to_dot(vars : Vars, circuit : Circuit) : String
   ].join("\n")
 end
 
+def solve(vars : Vars, circuit : Circuit) : Int
+  z3_src = translate_to_z3(vars, circuit)
+
+  z3_proc = Process.new("z3", ["-smt2", "-in"], input: :pipe, output: :pipe)
+  z3_proc.input.puts(z3_src)
+  z3_proc.input.close
+
+  z3_output = z3_proc.output.gets_to_end.gsub("\n", "")
+  output_vars = [] of Tuple(String, Int64)
+  z3_output.scan(/\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+\d+\)\s+#[xb](\d+)\)/).each do |match|
+    output_vars << {match[1], match[2].to_i64}
+  end
+  output_vars.sort!
+
+  output_vars
+    .select { |v| v[0].starts_with?('z') }
+    .map { |v| v[1] }
+    .reverse
+    .reduce(0_i64) { |acc, b| (acc << 1) | b }
+end
+
 if ARGV.size == 0
   puts "Usage: day24 [--dump-dot] [--dump-z3] <path to input>"
   exit 1
@@ -51,23 +72,6 @@ if flags.includes?("--dump-dot")
 elsif flags.includes?("--dump-z3")
   puts translate_to_z3(vars, circuit)
 else
-  z3_src = translate_to_z3(vars, circuit)
-
-  z3_proc = Process.new("z3", ["-smt2", "-in"], input: :pipe, output: :pipe)
-  z3_proc.input.puts(z3_src)
-  z3_proc.input.close
-
-  z3_output = z3_proc.output.gets_to_end.gsub("\n", "")
-  output_vars = [] of Tuple(String, Int64)
-  z3_output.scan(/\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+\d+\)\s+#[xb](\d+)\)/).each do |match|
-    output_vars << {match[1], match[2].to_i64}
-  end
-  output_vars.sort!
-
-  part1 = output_vars
-    .select { |v| v[0].starts_with?('z') }
-    .map { |v| v[1] }
-    .reverse
-    .reduce(0_i64) { |acc, b| (acc << 1) | b }
+  part1 = solve(vars, circuit)
   puts "Part 1: #{part1}"
 end
