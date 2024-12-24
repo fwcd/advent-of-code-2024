@@ -52,6 +52,8 @@ else
   z3_proc = Process.new("z3", ["-smt2", "-in"], input: :pipe, output: :pipe)
   z3_proc.input.puts(z3_src)
   z3_proc.input.close()
-  z3_output = z3_proc.output.gets_to_end()
-  puts z3_output
+  z3_output = z3_proc.output.gets_to_end().gsub("\n", "")
+  z3_output.scan(/\(define-fun\s+(\w+)\s+\(\)\s+\(_\s+BitVec\s+\d+\)\s+#[xb](\d+)\)/).each do |match|
+    puts "#{match[1]} -> #{match[2]}"
+  end
 end
