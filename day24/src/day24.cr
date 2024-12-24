@@ -1,6 +1,6 @@
 BITS = 1
 
-def translate_to_z3(vars, circuit) : String
+def translate_to_z3(vars : Array(Array(String)), circuit : Array(Tuple(Array(String), String))) : String
   [
     *vars.map { |v| "(declare-const #{v[0]} (_ BitVec #{BITS}))" },
     *circuit.map { |c| "(declare-const #{c[1]} (_ BitVec #{BITS}))" },
@@ -11,7 +11,7 @@ def translate_to_z3(vars, circuit) : String
   ].join("\n")
 end
 
-def translate_to_dot(vars, circuit) : String
+def translate_to_dot(vars : Array(Array(String)), circuit : Array(Tuple(Array(String), String))) : String
   [
     "digraph {",
     *circuit.flat_map do |c|
@@ -40,7 +40,7 @@ vars = raw_vars.map { |r| r.split(": ") }
 circuit = raw_circuit.map do |r|
   raw_expr, res = r.split(" -> ")
   expr = raw_expr.split(' ')
-  [expr, res]
+  {expr, res}
 end
 
 if flags.includes?("--dump-dot")
