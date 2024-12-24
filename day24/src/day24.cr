@@ -25,7 +25,7 @@ def translate_to_dot(vars, circuit) : String
 end
 
 if ARGV.size == 0
-  puts "Usage: day24 [--dot] <path to input>"
+  puts "Usage: day24 [--dump-dot] [--dump-z3] <path to input>"
   exit 1
 end
 
@@ -43,8 +43,15 @@ circuit = raw_circuit.map do |r|
   [expr, res]
 end
 
-if flags.includes?("--dot")
+if flags.includes?("--dump-dot")
   puts translate_to_dot(vars, circuit)
-else
+elsif flags.includes?("--dump-z3")
   puts translate_to_z3(vars, circuit)
+else
+  z3_src = translate_to_z3(vars, circuit)
+  z3_proc = Process.new("z3", ["-smt2", "-in"], input: :pipe, output: :pipe)
+  z3_proc.input.puts(z3_src)
+  z3_proc.input.close()
+  z3_output = z3_proc.output.gets_to_end()
+  puts z3_output
 end
