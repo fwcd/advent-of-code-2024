@@ -35,28 +35,32 @@ extension (ptype: PadType) {
   def locate(c: Char) = ptype.layout.find(_._2 == c).get._1
 
   def shortestPath(startPos: Vec2, endPos: Vec2): String =
-    case class Node(pos: Vec2, program: String = "") extends Ordered[Node] {
-      def cost = program.length - "^^+|vv+|<<+|>>+".r.findAllMatchIn(program).length
+    case class Node(pos: Vec2, index: Int, program: String = "") extends Ordered[Node] {
+      def cost = program.length * 1_000_000 + turns * 1_000 + index
+
+      def turns = program.zip(program.tail).count { case (c1, c2) => c1 != c2 }
 
       def compare(that: Node): Int = that.cost compare cost // Intentionally reversed for min-heap
     }
 
     val queue = mutable.PriorityQueue[Node]()
     val visited = mutable.Set[Vec2]()
+    var index = 0
 
-    queue.enqueue(Node(startPos))
-    visited.add(startPos)
+    queue.enqueue(Node(startPos, index))
 
     while !queue.isEmpty do
       val node = queue.dequeue()
       if node.pos == endPos then
         return node.program.appended('A')
       
-      for (action, dir) <- DIRECTIONS do
+      for action <- List('<', '^', 'v', '>') do
+        val dir = DIRECTIONS(action)
         val neigh = node.pos + dir
         if layout.contains(neigh) && !visited.contains(neigh) then
           visited.add(neigh)
-          queue.enqueue(Node(neigh, node.program.appended(action)))
+          queue.enqueue(Node(neigh, index, node.program.appended(action)))
+          index += 1
       
     throw RuntimeException("No shortest program found")
   
@@ -220,7 +224,8 @@ def moveCount(robots: Int, current: Char, next: Char): Int =
   // println(s"Part 1: ${solve(2, goals)}")
   // println(s"Part 2: ${solve(25, goals)}")
 
-  println(SHORTEST_PATHS)
+  for p <- SHORTEST_PATHS.toList.sorted do
+    println(p)
 
   for i <- (0 to 3) do
     println(s"${solve(i, goals, { (r, g) => shortestProgram(r, g).length })} vs ${solve(i, goals, shortestProgramLength)} vs ${solve(i, goals, shortestProgramLengthClever)}")
