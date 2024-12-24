@@ -63,6 +63,7 @@ int64_t findBestScore(std::vector<int64_t> input) {
         for (int64_t x4 = -bound; x4 <= bound; x4++) {
           int64_t n = score(input, x1, x2, x3, x4);
           if (n > bestScore) {
+            std::cout << "New best: (" << x1 << ", " << x2 << ", " << x3 << ", " << x4 << ") -> " << n << std::endl;
             bestScore = n;
           }
         }
