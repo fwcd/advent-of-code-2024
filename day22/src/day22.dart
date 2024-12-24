@@ -34,8 +34,16 @@ int monkey(int secret, int x1, int x2, int x3, int x4) {
   return -1;
 }
 
-int score(List<int> input, int x1, int x2, int x3, int x4) =>
-  input.map((n) => monkey(n, x1, x2, x3, x4)).where((n) => n >= 0).fold(0, (a, b) => a + b);
+int score(List<int> input, int x1, int x2, int x3, int x4) {
+  int sum = 0;
+  for (int n in input) {
+    int price = monkey(n, x1, x2, x3, x4);
+    if (price > 0) {
+      sum += price;
+    }
+  }
+  return sum;
+}
 
 int findBestScore(List<int> input) {
   int bestScore = 0;
