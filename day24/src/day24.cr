@@ -57,79 +57,40 @@ def solve(z3_src : String) : Array(Tuple(String, Int64))
   output_vars
 end
 
-def swap(i : Int, j : Int, circuit : Circuit) : Circuit
-  new_circuit = [*circuit]
-  new_circuit[i] = {circuit[i][0], circuit[j][1]}
-  new_circuit[j] = {circuit[j][0], circuit[i][1]}
-  new_circuit
-end
-
-def flip!(i : Int, vars : Vars)
-  vars[i] = {vars[i][0], 1_i64 - vars[i][1]}
-end
-
-RNG = Random.new
-
-def randomize!(vars : Vars)
-  (0...vars.size).each do |i|
-    if RNG.next_bool
-      flip!(i, vars)
-    end
-  end
-end
-
-def find_best_swap(vars : Vars, circuit : Circuit, visited : Set(String)) : Tuple(Int32, Int32)
-  output_vars = solve(translate_to_z3(vars, circuit))
-  x = extract_int("x", output_vars)
-  y = extract_int("y", output_vars)
-
-  smallest = 1000000
-  smallest_i = -1
-  smallest_j = -1
-  (0...circuit.size)
-    .flat_map do |i|
-      # Baed on manual analysis of the GraphViz plot, the swaps seem to be relatively local
-      ({i + 1, circuit.size - 1}.min..{i + 5, circuit.size - 1}.min)
-        .select { |j| i != j && !visited.includes?(circuit[i][1]) && !visited.includes?(circuit[j][1]) }
-        .map { |j| {i, j} }
-    end
-    .each do |pair|
-      i, j = pair
-      max_d = 0
-      max_d_z = 0
-      vars = [*vars]
-      4.times do
-        randomize!(vars)
-        output_vars = solve(translate_to_z3(vars, swap(i, j, circuit)))
-        x = extract_int("x", output_vars)
-        y = extract_int("y", output_vars)
-        z = extract_int("z", output_vars)
-        d = hamming_dist(x + y, z)
-        if d > max_d
-          max_d = d
-          max_d_z = z
-        end
-      end
-      if max_d < smallest
-        puts "#{i}, #{j} -> #{max_d}"
-        smallest = max_d
-        smallest_i = i
-        smallest_j = j
-      end
-    end
-  {smallest_i, smallest_j}
-end
-
-def hamming_dist(n : Int64, m : Int64) : Int64
-  (n ^ m).popcount
-end
-
 def extract_int(prefix : String, values : Array(Tuple(String, Int64))) : Int
   values
     .select { |v| v[0].starts_with?(prefix) }
     .map { |v| v[1] }
     .reverse
     .reduce(0_i64) { |acc, b| (acc << 1) | b }
+end
+
+def is_x(s : String) : Bool
+  s.starts_with?("x")
+end
+
+def is_y(s : String) : Bool
+  s.starts_with?("y")
+end
+
+def is_z(s : String) : Bool
+  s.starts_with?("z")
+end
+
+def is_coord(s : String) : Bool
+  is_x(s) || is_y(s) || is_z(s)
+end
+
+def is_wrong(expr : Array(String), res : String) : Bool
+  lhs, op, rhs = expr
+  xor_gate = op == "XOR"
+  or_gate = op == "OR"
+  and_gate = op == "AND"
+  
+  [
+    xor_gate && !is_coord(lhs) && !is_coord(rhs) && !is_coord(res),
+    !xor_gate && is_z(res) && res != "z45",
+  ].any?
 end
 
 if ARGV.size == 0
@@ -152,24 +113,9 @@ else
   part1 = extract_int("z", solve(translate_to_z3(vars, circuit)))
   puts "Part 1: #{part1}"
 
-  # For part 2 we use a probabilistic algorithm that tries to find the best
-  # swaps for randomized inputs.
-
-  swapped = [] of String
-  visited = Set(String).new
-
-  4.times do |n|
-    i, j = find_best_swap(vars, circuit, visited)
-
-    [circuit[i][1], circuit[j][1]].each do |v|
-      swapped << v
-      visited << v
-    end
-
-    circuit = swap(i, j, circuit)
-
-    puts "#{i}, #{j}"
-  end
-  swapped.sort!
-  puts "Part 2: #{swapped.join(",")}"
+  part2 = circuit
+    .select { |c| is_wrong(c[0], c[1]) }
+    .map { |c| c[1] }
+    .join(",")
+  puts "Part 2: #{part2}"
 end
