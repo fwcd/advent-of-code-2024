@@ -42,6 +42,7 @@ int findBestScore(List<int> input) {
   int bound = 9;
   for (var x1 = -bound; x1 <= bound; x1++) {
     for (var x2 = -bound; x2 <= bound; x2++) {
+      print("Searching ($x1, $x2, ...)");
       for (var x3 = -bound; x3 <= bound; x3++) {
         for (var x4 = -bound; x4 <= bound; x4++) {
           int n = score(input, x1, x2, x3, x4);
