@@ -57,13 +57,10 @@ int64_t findBestScore(std::vector<int64_t> input) {
   int64_t bound = 9;
   for (int64_t x1 = -bound; x1 <= bound; x1++) {
     for (int64_t x2 = -bound; x2 <= bound; x2++) {
-      if (x1 == x2) continue;
       std::cout << "Searching (" << x1 << ", " << x2 << ")" << std::endl;
       #pragma omp parallel for
       for (int64_t x3 = -bound; x3 <= bound; x3++) {
-        if (x3 == x2 || x3 == x1) continue;
         for (int64_t x4 = -bound; x4 <= bound; x4++) {
-          if (x4 == x3 || x4 == x2 || x4 == x1) continue;
           int64_t n = score(input, x1, x2, x3, x4);
           if (n > bestScore) {
             std::cout << "New best: (" << x1 << ", " << x2 << ", " << x3 << ", " << x4 << ") -> " << n << std::endl;
