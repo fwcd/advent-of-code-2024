@@ -1,6 +1,9 @@
 BITS = 1
 
-def translate_to_z3(vars : Array(Array(String)), circuit : Array(Tuple(Array(String), String))) : String
+alias Vars = Array(Array(String))
+alias Circuit = Array(Tuple(Array(String), String))
+
+def translate_to_z3(vars : Vars, circuit : Circuit) : String
   [
     *vars.map { |v| "(declare-const #{v[0]} (_ BitVec #{BITS}))" },
     *circuit.map { |c| "(declare-const #{c[1]} (_ BitVec #{BITS}))" },
@@ -11,7 +14,7 @@ def translate_to_z3(vars : Array(Array(String)), circuit : Array(Tuple(Array(Str
   ].join("\n")
 end
 
-def translate_to_dot(vars : Array(Array(String)), circuit : Array(Tuple(Array(String), String))) : String
+def translate_to_dot(vars : Vars, circuit : Circuit) : String
   [
     "digraph {",
     *circuit.flat_map do |c|
